@@ -11,6 +11,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import ProfileScreen from './src/screens/ProfileScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import ScheduleScreen from './src/screens/ScheduleScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -28,7 +29,7 @@ function App() {
   };
 
   React.useEffect(() => {
-    setTimeout(getCurrentUser, 500);
+    setTimeout(getCurrentUser, 1000);
   }, []);
 
   return (
@@ -39,6 +40,7 @@ function App() {
           <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Profile" component={ProfileScreen} />
+            <Drawer.Screen name="Schedule" component={ScheduleScreen}/>
           </Drawer.Navigator>
         ) : (
           <RootStackScreen />
