@@ -38,9 +38,9 @@ function App() {
       <NavigationContainer>
         {context.token !== null ? (
           <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+            <Drawer.Screen name="Schedule" component={ScheduleScreen}/>
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="Profile" component={ProfileScreen} />
-            <Drawer.Screen name="Schedule" component={ScheduleScreen}/>
           </Drawer.Navigator>
         ) : (
           <RootStackScreen />

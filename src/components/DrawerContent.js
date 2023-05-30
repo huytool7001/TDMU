@@ -4,7 +4,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Avatar, Title, Caption, Drawer } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../themes/DrawerContent';
-import userAPIs from '../apis/user';
+import authAPIs from '../apis/auth';
 import { Context } from '../utils/context';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -15,14 +15,13 @@ const DrawerContent = (props) => {
     try {
       await GoogleSignin.signOut();
 
-      // const result = await userAPIs.signOut();
+      const result = await authAPIs.signOut(context.token);
+      console.log(result)
 
-      // const result = {};
-
-      // if (result.err) {
-      //   Alert.alert('Oops!', result.err, [{ text: 'Ok' }]);
-      //   return;
-      // }
+      if (result.err) {
+        Alert.alert('Oops!', result.err, [{ text: 'Ok' }]);
+        return;
+      }
 
       setContext({ ...context, token: null });
     } catch (error) {
@@ -56,12 +55,19 @@ const DrawerContent = (props) => {
               onPress={() => props.navigation.navigate('Home')}
             />
             <DrawerItem
+              label="Schedule"
+              icon={(color, size) => <Icon name="calendar-month" size={size} color={color} />}
+              onPress={() => {
+                props.navigation.navigate('Schedule');
+              }}
+            />
+            <DrawerItem
               label="Profile"
               icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Profile');
               }}
-            />
+            />            
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>

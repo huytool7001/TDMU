@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-
+import authAPIs from '../apis/auth';
 import { Context } from '../utils/context';
 import { useTheme } from 'react-native-paper';
 import styles from '../themes/SignInScreen';
@@ -80,9 +80,11 @@ const SignInScreen = ({ navigation }) => {
   const handleSignInWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      setContext({ ...context, token: userInfo.idToken });
+      await GoogleSignin.signIn();
+      const token = await GoogleSignin.getTokens();
+      const result = await authAPIs.signIn(token.accessToken);
+      console.log(result.access_token)
+      setContext({ ...context, token: result.access_token });
     } catch (error) {
       console.log(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
