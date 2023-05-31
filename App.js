@@ -12,6 +12,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import ScheduleScreen from './src/screens/ScheduleScreen';
+import TranscriptScreen from './src/screens/TranscriptScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,8 +39,9 @@ function App() {
       <NavigationContainer>
         {context.token !== null ? (
           <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
-            <Drawer.Screen name="Schedule" component={ScheduleScreen}/>
             <Drawer.Screen name="Home" component={HomeScreen} />
+            <Drawer.Screen name="Schedule" component={ScheduleScreen}/>
+            <Drawer.Screen name="Transcript" component={TranscriptScreen}/>
             <Drawer.Screen name="Profile" component={ProfileScreen} />
           </Drawer.Navigator>
         ) : (

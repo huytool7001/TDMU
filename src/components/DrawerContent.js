@@ -56,9 +56,16 @@ const DrawerContent = (props) => {
             />
             <DrawerItem
               label="Schedule"
-              icon={(color, size) => <Icon name="calendar-month" size={size} color={color} />}
+              icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Schedule');
+              }}
+            />
+            <DrawerItem
+              label="Transcript"
+              icon={(color, size) => <Icon name="table-search" size={size} color={color} />}
+              onPress={() => {
+                props.navigation.navigate('Transcript');
               }}
             />
             <DrawerItem

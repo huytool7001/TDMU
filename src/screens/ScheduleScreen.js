@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { View, Text, Dimensions, FlatList, ScrollView } from 'react-native';
-import DropDown from '../components/DropDown';
 import Timeline from 'react-native-timeline-flatlist';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import scheduleAPIs from '../apis/schedule';
 import { Context } from '../utils/context';
