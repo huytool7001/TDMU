@@ -4,7 +4,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Avatar, Title, Caption, Drawer } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../themes/DrawerContent';
-import authAPIs from '../apis/auth';
+import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -58,7 +58,7 @@ const DrawerContent = (props) => {
               label="Thời khóa biểu"
               icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
               onPress={() => {
-                props.navigation.navigate('Schedule');
+                props.navigation.navigate('StudySchedule');
               }}
             />
             <DrawerItem

@@ -2,7 +2,7 @@ import { API_URL } from '../common/constant';
 
 const url = `${API_URL}/sch`;
 
-class ScheduleAPIs {
+class StudyScheduleAPIs {
   constructor() {}
 
   getSemesters = (token) => {
@@ -64,5 +64,5 @@ class ScheduleAPIs {
   };
 }
 
-const scheduleAPIs = new ScheduleAPIs();
-export default scheduleAPIs;
+const studyScheduleAPIs = new StudyScheduleAPIs();
+export default studyScheduleAPIs;

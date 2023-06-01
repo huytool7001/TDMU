@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, Text, Dimensions, TouchableOpacity, Button } from 'react-native';
 import { Context } from '../utils/context';
 import DropDownPicker from 'react-native-dropdown-picker';
-import transcriptAPIs from '../apis/transcript';
+import transcriptAPIs from '../apis/Transcript';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo'

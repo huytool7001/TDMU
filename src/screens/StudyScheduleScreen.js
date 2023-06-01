@@ -2,11 +2,11 @@ import * as React from 'react';
 import { View, Text, Dimensions, FlatList, ScrollView } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import scheduleAPIs from '../apis/schedule';
+import studyScheduleAPIs from '../apis/StudySchedule';
 import { Context } from '../utils/context';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-const ScheduleScreen = () => {
+const StudyScheduleScreen = () => {
   const windowWidth = Dimensions.get('window').width;
   const [context, setContext] = React.useContext(Context);
   const [data, setData] = React.useState(null);
@@ -53,7 +53,7 @@ const ScheduleScreen = () => {
   }, [selectedWeek, data]);
 
   const getSemesters = async () => {
-    const result = await scheduleAPIs.getSemesters(context.token);
+    const result = await studyScheduleAPIs.getSemesters(context.token);
     console.log(result)
     if (result.code === 200) {
       setSemesters(result.data.ds_hoc_ky);
@@ -61,7 +61,7 @@ const ScheduleScreen = () => {
   };
 
   const getSchedule = async () => {
-    const result = await scheduleAPIs.getSchedule(context.token, selectedSemester);
+    const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester);
 
     setData(result.data);
     setSelectedWeek(0);
@@ -158,4 +158,4 @@ const ScheduleScreen = () => {
   );
 };
 
-export default ScheduleScreen;
+export default StudyScheduleScreen;
