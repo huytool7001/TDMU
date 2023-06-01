@@ -5,16 +5,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import transcriptAPIs from '../apis/transcript';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import Entypo from 'react-native-vector-icons/Entypo'
 import Modal from 'react-native-modal';
 
-const header = ['Môn học', 'TK(10)', 'TK(4)', 'TK(C)', ''];
+const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
 const widthArr = [200, 48, 48, 48, 40];
-
-const deviceWidth = Dimensions.get('window').width;
-const deviceHeight =
-  Platform.OS === 'ios'
-    ? Dimensions.get('window').height
-    : require('react-native-extra-dimensions-android').get('REAL_WINDOW_HEIGHT');
 
 const TranscriptScreen = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -50,7 +45,6 @@ const TranscriptScreen = () => {
       <Modal
         style={{ margin: 0 }}
         isVisible={modalVisible}
-        backdropOpacity={0.5}
         children={
           selectedSubject.length ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -71,7 +65,7 @@ const TranscriptScreen = () => {
                   widthArr={[120, 120, 120]}
                 />
               </Table>
-              <Button title="Close" onPress={() => setModalVisible(false)}></Button>
+              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
             </View>
           ) : (
             <View></View>
@@ -101,7 +95,7 @@ const TranscriptScreen = () => {
                 style={{ backgroundColor: '#2596be' }}
               />
               {transcript.ds_diem_mon_hoc
-                .map((mon) => [mon.ten_mon, mon.diem_tk, mon.diem_tk_so, mon.diem_tk_chu, ''])
+                .map((mon) => [mon.ten_mon, mon.so_tin_chi, mon.diem_tk, mon.ket_qua, ''])
                 .map((rowData, index) => (
                   <TableWrapper key={index} style={{ flexDirection: 'row' }}>
                     {rowData.map((cellData, cellIndex) => (
@@ -117,6 +111,12 @@ const TranscriptScreen = () => {
                                 setSelectedSubject(transcript.ds_diem_mon_hoc[index].ds_diem_thanh_phan);
                               }}
                             />
+                          ) : cellIndex === rowData.length - 2 ? (
+                            cellData === 1 ? (
+                              <Entypo name="check" size={16} color="green" />
+                            ) : (
+                              <Entypo name="cross" size={16} color="red" />
+                            )
                           ) : (
                             cellData
                           )
