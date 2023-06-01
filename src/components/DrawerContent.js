@@ -50,26 +50,26 @@ const DrawerContent = (props) => {
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
-              label="Home"
+              label="Trang chủ"
               icon={(color, size) => <Icon name="home-outline" size={size} color={color} />}
               onPress={() => props.navigation.navigate('Home')}
             />
             <DrawerItem
-              label="Schedule"
+              label="Thời khóa biểu"
               icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Schedule');
               }}
             />
             <DrawerItem
-              label="Transcript"
+              label="Xem điểm"
               icon={(color, size) => <Icon name="table-search" size={size} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Transcript');
               }}
             />
             <DrawerItem
-              label="Profile"
+              label="Hồ sơ"
               icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Profile');
@@ -80,7 +80,7 @@ const DrawerContent = (props) => {
       </DrawerContentScrollView>
       <Drawer.Section>
         <DrawerItem
-          label="Sign out"
+          label="Đăng xuất"
           icon={(color, size) => <Icon name="exit-to-app" size={size} color={color} />}
           onPress={handleSignOut}
         />
