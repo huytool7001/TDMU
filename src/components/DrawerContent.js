@@ -69,6 +69,13 @@ const DrawerContent = (props) => {
               }}
             />
             <DrawerItem
+              label="Xem lịch thi"
+              icon={(color, size) => <Icon name="calendar-text" size={size} color={color} />}
+              onPress={() => {
+                props.navigation.navigate('ExamSchedule');
+              }}
+            />
+            <DrawerItem
               label="Hồ sơ"
               icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}
               onPress={() => {

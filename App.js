@@ -13,6 +13,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import StudyScheduleScreen from './src/screens/StudyScheduleScreen';
 import TranscriptScreen from './src/screens/TranscriptScreen';
+import ExamScheduleScreen from './src/screens/ExamScheduleScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -42,6 +43,7 @@ function App() {
             <Drawer.Screen name="Home" component={HomeScreen} options={{ title: 'Trang chủ' }} />
             <Drawer.Screen name="StudySchedule" component={StudyScheduleScreen} options={{ title: 'Thời khóa biểu' }}/>
             <Drawer.Screen name="Transcript" component={TranscriptScreen} options={{ title: 'Xem điểm' }}/>
+            <Drawer.Screen name="ExamSchedule" component={ExamScheduleScreen} options={{ title: 'Xem lịch thi' }}/>
             <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Hồ sơ' }}/>
           </Drawer.Navigator>
         ) : (
