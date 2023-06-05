@@ -28,15 +28,14 @@ const ExamScheduleScreen = () => {
 
   const getSemesters = async () => {
     const result = await examScheduleAPIs.getSemesters(context.token);
-    console.log(result);
     if (result.code === 200) {
       setSemesters(result.data.ds_hoc_ky);
+      setSelectedSemester(result.data.ds_hoc_ky[0].hoc_ky);
     }
   };
 
   const getSchedule = async () => {
     const result = await examScheduleAPIs.getSchedule(context.token, selectedSemester);
-    console.log(result);
     if (result.code === 200) {
       setSchedule(result.data.ds_lich_thi);
     }

@@ -34,9 +34,9 @@ const TranscriptScreen = () => {
 
   const getTranscripts = async () => {
     const result = await transcriptAPIs.getTranscripts(context.token);
-    console.log(result);
     if (result.code === 200) {
       setData(result.data.ds_diem_hocky);
+      setSelectedSemester(0);
     }
   };
 

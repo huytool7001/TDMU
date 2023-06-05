@@ -38,7 +38,7 @@ const StudyScheduleScreen = () => {
   }, [selectedSemester]);
 
   React.useEffect(() => {
-    if (data) {
+    if (data && selectedWeek) {
       let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
         (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
         return accumulator;
@@ -54,17 +54,56 @@ const StudyScheduleScreen = () => {
 
   const getSemesters = async () => {
     const result = await studyScheduleAPIs.getSemesters(context.token);
-    console.log(result)
     if (result.code === 200) {
       setSemesters(result.data.ds_hoc_ky);
+
+      let isSelectedSemester = false;
+      result.data.ds_hoc_ky.forEach((hoc_ky) => {
+        let dateParts = hoc_ky.ngay_bat_dau_hk?.split('/');
+        hoc_ky.ngay_bat_dau_hk = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+
+        dateParts = hoc_ky.ngay_ket_thuc_hk?.split('/');
+        hoc_ky.ngay_ket_thuc_hk = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+
+        const date = new Date();
+        if (hoc_ky.ngay_bat_dau_hk <= date && hoc_ky.ngay_ket_thuc_hk > date) {
+          setSelectedSemester(hoc_ky.hoc_ky);
+          isSelectedSemester = true;
+        }
+      });
+
+      if (!isSelectedSemester) {
+        setSelectedSemester(result.data.ds_hoc_ky[0].hoc_ky);
+      }
     }
   };
 
   const getSchedule = async () => {
     const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester);
 
-    setData(result.data);
-    setSelectedWeek(0);
+    if (result.code === 200) {
+      setData(result.data);
+
+      let isSelectedWeek = false;
+      result.data.ds_tuan_tkb.forEach((tuan, index) => {
+        let dateParts = tuan.ngay_bat_dau?.split('/');
+        tuan.ngay_bat_dau = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+
+        dateParts = tuan.ngay_ket_thuc?.split('/');
+        tuan.ngay_ket_thuc = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+
+        const date = new Date();
+        if (tuan.ngay_bat_dau <= date && tuan.ngay_ket_thuc > date) {
+          console.log(index)
+          setSelectedWeek(index);
+          isSelectedWeek = true;
+        }
+      });
+
+      if (!isSelectedWeek) {
+        setSelectedWeek(0);
+      }
+    }
   };
 
   return (
