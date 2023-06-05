@@ -1,22 +1,26 @@
 import * as React from 'react';
-import { View, Text, Dimensions, ScrollView, Image } from 'react-native';
+import { View, Text, Dimensions, ScrollView, Image, Button } from 'react-native';
 import examScheduleAPIs from '../apis/ExamSchedule';
 import { Context } from '../utils/context';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
+import { Table, Row, Rows, TableWrapper, Cell, Col } from 'react-native-table-component';
+import Modal from 'react-native-modal';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
-const header = ['Môn thi', 'Ngày thi', 'Bắt đầu', 'Phút', 'Phòng thi', 'Hình thức thi'];
-const widthArr = [200, 88, 60, 48, 80, 160];
+const widthArr = [200, 88, 56, 40];
 
 const ExamScheduleScreen = () => {
   const windowWidth = Dimensions.get('window').width;
   const [context, setContext] = React.useContext(Context);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [schedule, setSchedule] = React.useState([]);
 
   //semester
   const [semesters, setSemesters] = React.useState([]);
   const [semesterOpen, setSemesterOpen] = React.useState(false);
   const [selectedSemester, setSelectedSemester] = React.useState(null);
+
+  const [selectedSubject, setSelectedSubject] = React.useState(null);
 
   React.useEffect(() => {
     getSemesters();
@@ -43,6 +47,55 @@ const ExamScheduleScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        style={{ margin: 0 }}
+        isVisible={modalVisible}
+        children={
+          selectedSubject ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff', width: windowWidth - 10 }}>
+                <TableWrapper style={{ flexDirection: 'row' }}>
+                  <Col
+                    data={[
+                      'Mã Môn',
+                      'Môn thi',
+                      'Sỉ số',
+                      'Ngày thi',
+                      'Bắt đầu',
+                      'Phút',
+                      'Phòng thi',
+                      'Cơ sở',
+                      'Hình thức thi',
+                    ]}
+                    textStyle={{ fontWeight: 'bold', textAlign: 'center' }}
+                    style={{ backgroundColor: '#2596be' }}
+                    width={88}
+                    heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
+                  />
+                  <Col
+                    data={[
+                      selectedSubject.ma_mon,
+                      selectedSubject.ten_mon,
+                      selectedSubject.si_so,
+                      selectedSubject.ngay_thi,
+                      selectedSubject.gio_bat_dau,
+                      selectedSubject.so_phut,
+                      selectedSubject.ma_phong || selectedSubject.ghep_phong,
+                      selectedSubject.ma_co_so,
+                      selectedSubject.hinh_thuc_thi,
+                    ]}
+                    textStyle={{ textAlign: 'center' }}
+                    heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
+                  />
+                </TableWrapper>
+              </Table>
+              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
+            </View>
+          ) : (
+            <View></View>
+          )
+        }
+      ></Modal>
       <View style={{ position: 'absolute', paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 3 }}>
         <DropDownPicker
           open={semesterOpen}
@@ -56,30 +109,36 @@ const ExamScheduleScreen = () => {
         />
       </View>
       <View style={{ top: 100, marginBottom: 100 }}>
-        <ScrollView horizontal={true}>
+        <View style={{ alignItems: 'center' }}>
           {schedule && schedule.length ? (
             <Table borderStyle={{ borderWidth: 1 }}>
               <Row
-                data={header}
-                widthArr={widthArr}
+                data={['Môn thi', 'Ngày thi', 'Bắt đầu', '']}
+                widthArr={[200, 88, 56, 40]}
                 textStyle={{ fontWeight: 'bold', textAlign: 'center' }}
                 style={{ backgroundColor: '#2596be' }}
               />
               {schedule
-                .map((mon) => [
-                  mon.ten_mon,
-                  mon.ngay_thi,
-                  mon.gio_bat_dau,
-                  mon.so_phut,
-                  mon.ma_phong || mon.ghep_phong,
-                  mon.ghi_chu_htt,
-                ])
+                .map((mon) => [mon.ten_mon, mon.ngay_thi, mon.gio_bat_dau, ''])
                 .map((rowData, index) => (
                   <TableWrapper key={index} style={{ flexDirection: 'row' }}>
                     {rowData.map((cellData, cellIndex) => (
                       <Cell
                         key={cellIndex}
-                        data={cellData}
+                        data={
+                          cellIndex === rowData.length - 1 ? (
+                            <Fontisto
+                              name="nav-icon-list-a"
+                              size={16}
+                              onPress={() => {
+                                setModalVisible(true);
+                                setSelectedSubject(schedule[index]);
+                              }}
+                            />
+                          ) : (
+                            cellData
+                          )
+                        }
                         textStyle={{ textAlign: 'left' }}
                         style={
                           cellIndex !== 0
@@ -92,7 +151,7 @@ const ExamScheduleScreen = () => {
                 ))}
             </Table>
           ) : null}
-        </ScrollView>
+        </View>
       </View>
     </View>
   );
