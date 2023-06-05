@@ -38,7 +38,7 @@ const StudyScheduleScreen = () => {
   }, [selectedSemester]);
 
   React.useEffect(() => {
-    if (data && selectedWeek) {
+    if (data && selectedWeek !== null) {
       let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
         (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
         return accumulator;
@@ -94,7 +94,6 @@ const StudyScheduleScreen = () => {
 
         const date = new Date();
         if (tuan.ngay_bat_dau <= date && tuan.ngay_ket_thuc > date) {
-          console.log(index)
           setSelectedWeek(index);
           isSelectedWeek = true;
         }
