@@ -83,8 +83,12 @@ const SignInScreen = ({ navigation }) => {
       await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
       const result = await authAPIs.signIn(token.accessToken);
-      console.log(result.access_token)
       setContext({ ...context, token: result.access_token });
+      if (result.expires_in) {
+        setTimeout(() => {
+          setContext({ ...context, expire: true });
+        }, result.expires_in * 1000);
+      }
     } catch (error) {
       console.log(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

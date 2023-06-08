@@ -14,6 +14,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import StudyScheduleScreen from './src/screens/StudyScheduleScreen';
 import TranscriptScreen from './src/screens/TranscriptScreen';
 import ExamScheduleScreen from './src/screens/ExamScheduleScreen';
+import ReLoginAlert from './src/components/ReLoginAlert';
 
 const Drawer = createDrawerNavigator();
 
@@ -21,12 +22,13 @@ function App() {
   const [context, setContext] = React.useState({
     token: null,
     isLoading: false,
+    expire: false,
   });
 
   const getCurrentUser = async () => {
     const currentUser = await GoogleSignin.getCurrentUser();
     if (currentUser) {
-      setContext({ ...context, token: currentUser.idToken });
+      await GoogleSignin.signOut()
     }
   };
 
@@ -37,6 +39,7 @@ function App() {
   return (
     <Context.Provider value={[context, setContext]}>
       <Spinner visible={context.isLoading} />
+      {context.expire && <ReLoginAlert />}
       <NavigationContainer>
         {context.token !== null ? (
           <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
