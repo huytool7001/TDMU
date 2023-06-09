@@ -3,10 +3,10 @@ import { View } from 'react-native';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Avatar, Title, Caption, Drawer } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import styles from '../themes/DrawerContent';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const DrawerContent = (props) => {
   const [context, setContext] = React.useContext(Context);

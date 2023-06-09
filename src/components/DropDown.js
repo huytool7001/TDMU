@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { View } from 'react-native';
 
 const DropDown = ({ data, open, setOpen, onOpen }) => {
   const [value, setValue] = useState(null);

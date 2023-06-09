@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { View, Text } from 'react-native';
 import { Context } from '../utils/context';
 import profileAPIs from '../apis/Profile';

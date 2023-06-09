@@ -1,16 +1,13 @@
-import * as React from 'react';
-
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { Context } from './src/utils/context';
 import { DrawerContent } from './src/components/DrawerContent';
 import RootStackScreen from './src/screens/RootStackScreen';
-
-import { Context } from './src/utils/context';
-import Spinner from 'react-native-loading-spinner-overlay';
 import ProfileScreen from './src/screens/ProfileScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import StudyScheduleScreen from './src/screens/StudyScheduleScreen';
 import TranscriptScreen from './src/screens/TranscriptScreen';
 import ExamScheduleScreen from './src/screens/ExamScheduleScreen';

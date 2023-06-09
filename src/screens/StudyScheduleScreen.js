@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { View, Text, Dimensions, FlatList, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, Dimensions, FlatList } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import DropDownPicker from 'react-native-dropdown-picker';
 import studyScheduleAPIs from '../apis/StudySchedule';
 import { Context } from '../utils/context';
-import DropDownPicker from 'react-native-dropdown-picker';
 
 const StudyScheduleScreen = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -21,36 +21,9 @@ const StudyScheduleScreen = () => {
   const [weekOpen, setWeekOpen] = React.useState(false);
   const [selectedWeek, setSelectedWeek] = React.useState(null);
 
-  const onSemesterOpen = React.useCallback(() => {
-    setWeekOpen(false);
-  }, []);
-
-  const onWeekOpen = React.useCallback(() => {
-    setSemesterOpen(false);
-  }, []);
-
   React.useEffect(() => {
     getSemesters();
   }, []);
-
-  React.useEffect(() => {
-    getSchedule();
-  }, [selectedSemester]);
-
-  React.useEffect(() => {
-    if (data && selectedWeek !== null) {
-      let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
-        (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
-        return accumulator;
-      }, {});
-
-      result = Object.keys(result).map((key) => {
-        return { day: key, data: result[key] };
-      });
-
-      setSchedule(result);
-    }
-  }, [selectedWeek, data]);
 
   const getSemesters = async () => {
     const result = await studyScheduleAPIs.getSemesters(context.token);
@@ -77,6 +50,10 @@ const StudyScheduleScreen = () => {
       }
     }
   };
+
+  React.useEffect(() => {
+    getSchedule();
+  }, [selectedSemester]);
 
   const getSchedule = async () => {
     const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester);
@@ -105,6 +82,29 @@ const StudyScheduleScreen = () => {
     }
   };
 
+  React.useEffect(() => {
+    if (data !== null && selectedWeek !== null) {
+      let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
+        (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
+        return accumulator;
+      }, {});
+
+      result = Object.keys(result).map((key) => {
+        return { day: key, data: result[key] };
+      });
+
+      setSchedule(result);
+    }
+  }, [selectedWeek, data]);
+
+  const onSemesterOpen = React.useCallback(() => {
+    setWeekOpen(false);
+  }, []);
+
+  const onWeekOpen = React.useCallback(() => {
+    setSemesterOpen(false);
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ position: 'absolute', paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 3 }}>
@@ -120,7 +120,7 @@ const StudyScheduleScreen = () => {
           dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
         />
       </View>
-      {data && data.ds_tuan_tkb?.length && (
+      {data !== null && data.ds_tuan_tkb?.length > 0 ? (
         <View style={{ position: 'absolute', top: 50, paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 2 }}>
           <DropDownPicker
             open={weekOpen}
@@ -134,7 +134,7 @@ const StudyScheduleScreen = () => {
             dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
           />
         </View>
-      )}
+      ) : null}
 
       <FlatList
         style={{ top: 100, marginBottom: 100 }}

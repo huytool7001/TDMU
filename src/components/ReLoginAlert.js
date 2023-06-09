@@ -1,9 +1,9 @@
+import React from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { View, Text, Button } from 'react-native';
-import authAPIs from '../apis/Auth';
-import React from 'react';
-import { Context } from '../utils/context';
 import Modal from 'react-native-modal';
+import authAPIs from '../apis/Auth';
+import { Context } from '../utils/context';
 
 const ReLoginAlert = () => {
   const [context, setContext] = React.useContext(Context);

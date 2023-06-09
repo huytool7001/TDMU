@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { View, Text, Dimensions, ScrollView, Image, Button } from 'react-native';
-import examScheduleAPIs from '../apis/ExamSchedule';
-import { Context } from '../utils/context';
+import React from 'react';
+import { View, Dimensions, Button } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Table, Row, Rows, TableWrapper, Cell, Col } from 'react-native-table-component';
+import { Table, Row, TableWrapper, Cell, Col } from 'react-native-table-component';
 import Modal from 'react-native-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import examScheduleAPIs from '../apis/ExamSchedule';
+import { Context } from '../utils/context';
 
 const widthArr = [200, 88, 56, 40];
 
@@ -26,10 +26,6 @@ const ExamScheduleScreen = () => {
     getSemesters();
   }, []);
 
-  React.useEffect(() => {
-    getSchedule();
-  }, [selectedSemester]);
-
   const getSemesters = async () => {
     const result = await examScheduleAPIs.getSemesters(context.token);
     if (result.code === 200) {
@@ -37,6 +33,10 @@ const ExamScheduleScreen = () => {
       setSelectedSemester(result.data.ds_hoc_ky[0].hoc_ky);
     }
   };
+
+  React.useEffect(() => {
+    getSchedule();
+  }, [selectedSemester]);
 
   const getSchedule = async () => {
     const result = await examScheduleAPIs.getSchedule(context.token, selectedSemester);
@@ -51,7 +51,7 @@ const ExamScheduleScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          selectedSubject ? (
+          selectedSubject !== null ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff', width: windowWidth - 10 }}>
                 <TableWrapper style={{ flexDirection: 'row' }}>
@@ -110,7 +110,7 @@ const ExamScheduleScreen = () => {
       </View>
       <View style={{ top: 100, marginBottom: 100 }}>
         <View style={{ alignItems: 'center' }}>
-          {schedule && schedule.length ? (
+          {schedule && schedule.length > 0 ? (
             <Table borderStyle={{ borderWidth: 1 }}>
               <Row
                 data={['Môn thi', 'Ngày thi', 'Bắt đầu', '']}

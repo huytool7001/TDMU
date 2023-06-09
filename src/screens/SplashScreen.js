@@ -8,10 +8,8 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import styles from '../themes/SplashScreen';
-import { Context } from '../utils/context';
 
 const SplashScreen = ({ navigation }) => {
-  const [context, setContext] = React.useContext(Context);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -27,8 +25,6 @@ const SplashScreen = ({ navigation }) => {
         <Text style={styles.title}>Thu Dau Mot University!</Text>
         <Text style={styles.text}>Sign in to continue</Text>
         <View style={styles.button}>
-          {/* <TouchableOpacity
-            onPress={() => setContext({ ...context, token: 'token' })}> */}
           <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
             <LinearGradient
               colors={['#2596be', '#085c8d']}

@@ -1,12 +1,12 @@
-import * as React from 'react';
+import React from 'react';
 import { View, Text, Dimensions, TouchableOpacity, Button } from 'react-native';
-import { Context } from '../utils/context';
-import DropDownPicker from 'react-native-dropdown-picker';
-import transcriptAPIs from '../apis/Transcript';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo'
 import Modal from 'react-native-modal';
+import { Context } from '../utils/context';
+import DropDownPicker from 'react-native-dropdown-picker';
+import transcriptAPIs from '../apis/Transcript';
 
 const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
 const widthArr = [200, 48, 48, 48, 40];
@@ -28,10 +28,6 @@ const TranscriptScreen = () => {
     getTranscripts();
   }, []);
 
-  React.useEffect(() => {
-    setTranscript(data[selectedSemester]);
-  }, [data, selectedSemester]);
-
   const getTranscripts = async () => {
     const result = await transcriptAPIs.getTranscripts(context.token);
     if (result.code === 200) {
@@ -40,13 +36,17 @@ const TranscriptScreen = () => {
     }
   };
 
+  React.useEffect(() => {
+    setTranscript(data[selectedSemester]);
+  }, [data, selectedSemester]);
+
   return (
     <View style={{ flex: 1 }}>
       <Modal
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          selectedSubject.length ? (
+          selectedSubject.length > 0 ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
                 <Row
@@ -84,7 +84,7 @@ const TranscriptScreen = () => {
           dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
         />
       </View>
-      {transcript && transcript.ds_diem_mon_hoc.length && (
+      {transcript && transcript.ds_diem_mon_hoc.length > 0 ? (
         <View style={{ top: 100, marginBottom: 100 }}>
           <View style={{ alignItems: 'center' }}>
             <Table borderStyle={{ borderWidth: 1 }}>
@@ -168,7 +168,7 @@ const TranscriptScreen = () => {
             </View>
           </View>
         </View>
-      )}
+      ) : null}
     </View>
   );
 };

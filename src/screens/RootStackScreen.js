@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { createStackNavigator } from '@react-navigation/stack';
 import { DrawerContent } from '../components/DrawerContent';
 import SplashScreen from './SplashScreen';

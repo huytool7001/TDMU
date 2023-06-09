@@ -4,11 +4,11 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { useTheme } from 'react-native-paper';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
-import { useTheme } from 'react-native-paper';
 import styles from '../themes/SignInScreen';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
   webClientId: '869859501130-uouaup2hk7mb26beso4o5jk7ql7objcn.apps.googleusercontent.com',
