@@ -15,7 +15,7 @@ GoogleSignin.configure({
   // webClientId: '79837717230-kttlrk5m6c41mps51smaofmf6j6jso6d.apps.googleusercontent.com',
 });
 
-const SignInScreen = ({ navigation }) => {
+const SignInScreen = () => {
   const [data, setData] = React.useState({
     username: '',
     password: '',

@@ -25,12 +25,12 @@ function App() {
   const getCurrentUser = async () => {
     const currentUser = await GoogleSignin.getCurrentUser();
     if (currentUser) {
-      await GoogleSignin.signOut()
+      await GoogleSignin.signOut();
     }
   };
 
   React.useEffect(() => {
-    setTimeout(getCurrentUser, 1000);
+    getCurrentUser();
   }, []);
 
   return (
@@ -41,10 +41,10 @@ function App() {
         {context.token !== null ? (
           <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen} options={{ title: 'Trang chủ' }} />
-            <Drawer.Screen name="StudySchedule" component={StudyScheduleScreen} options={{ title: 'Thời khóa biểu' }}/>
-            <Drawer.Screen name="Transcript" component={TranscriptScreen} options={{ title: 'Xem điểm' }}/>
-            <Drawer.Screen name="ExamSchedule" component={ExamScheduleScreen} options={{ title: 'Xem lịch thi' }}/>
-            <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Hồ sơ' }}/>
+            <Drawer.Screen name="StudySchedule" component={StudyScheduleScreen} options={{ title: 'Thời khóa biểu' }} />
+            <Drawer.Screen name="Transcript" component={TranscriptScreen} options={{ title: 'Xem điểm' }} />
+            <Drawer.Screen name="ExamSchedule" component={ExamScheduleScreen} options={{ title: 'Xem lịch thi' }} />
+            <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Hồ sơ' }} />
           </Drawer.Navigator>
         ) : (
           <RootStackScreen />

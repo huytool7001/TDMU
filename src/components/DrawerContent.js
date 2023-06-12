@@ -47,7 +47,6 @@ const DrawerContent = (props) => {
               </View>
             </View>
           </View>
-
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
               label="Trang chủ"
