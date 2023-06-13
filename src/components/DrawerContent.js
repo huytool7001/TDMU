@@ -4,12 +4,30 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Avatar, Title, Caption, Drawer } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import styles from '../themes/DrawerContent';
+import styles from '../themes/components/DrawerContent';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
+import profileAPIs from '../apis/Profile';
 
 const DrawerContent = (props) => {
   const [context, setContext] = React.useContext(Context);
+
+  const [user, setUser] = React.useState({
+    ten_day_du: '',
+    email: '',
+  });
+
+  React.useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const result = await profileAPIs.get(context.token);
+
+    if(result.code === 200){
+      setUser(result.data);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -33,17 +51,17 @@ const DrawerContent = (props) => {
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
-          <View style={styles.userInfoSection}>
-            <View style={{ flexDirection: 'row', marginTop: '5%' }}>
+          <View style={styles.paddingLeft20}>
+            <View style={styles.headerSection}>
               <Avatar.Image
                 source={{
                   uri: 'https://cdn.iconscout.com/icon/free/png-256/avatar-370-456322.png',
                 }}
                 size={50}
               />
-              <View style={{ marginLeft: '5%', flexDirection: 'column' }}>
-                <Title style={styles.title}>Administrator</Title>
-                <Caption style={styles.caption}>admin@gmail.com</Caption>
+              <View style={styles.userInfoSection}>
+                <Title style={styles.title}>{user.ten_day_du}</Title>
+                <Caption style={styles.caption}>{user.email}</Caption>
               </View>
             </View>
           </View>

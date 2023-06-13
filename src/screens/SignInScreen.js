@@ -8,7 +8,7 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import { useTheme } from 'react-native-paper';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
-import styles from '../themes/SignInScreen';
+import styles from '../themes/screens/SignInScreen';
 
 GoogleSignin.configure({
   webClientId: '869859501130-uouaup2hk7mb26beso4o5jk7ql7objcn.apps.googleusercontent.com',
@@ -185,7 +185,7 @@ const SignInScreen = () => {
         </View>
 
         <TouchableOpacity>
-          <Text style={{ color: '#085c8d', marginTop: 15 }}>Forgot password?</Text>
+          <Text style={styles.textForgotPassword}>Forgot password?</Text>
         </TouchableOpacity>
         <View style={styles.button}>
           <TouchableOpacity style={styles.signIn} onPress={handleSignIn}>

@@ -5,6 +5,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import studyScheduleAPIs from '../apis/StudySchedule';
 import { Context } from '../utils/context';
+import styles from '../themes/screens/StudyScheduleScreen';
+import dropdownStyles from '../themes/components/DropDown';
 
 const StudyScheduleScreen = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -107,7 +109,7 @@ const StudyScheduleScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ position: 'absolute', paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 3 }}>
+      <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}
           value={selectedSemester}
@@ -117,11 +119,11 @@ const StudyScheduleScreen = () => {
           setOpen={setSemesterOpen}
           setValue={setSelectedSemester}
           onOpen={onSemesterOpen}
-          dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
+          dropDownContainerStyle={dropdownStyles.dropDownContainer}
         />
       </View>
       {data !== null && data.ds_tuan_tkb?.length > 0 ? (
-        <View style={{ position: 'absolute', top: 50, paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 2 }}>
+        <View style={[dropdownStyles.container, { top: 50, zIndex: 2 }]}>
           <DropDownPicker
             open={weekOpen}
             value={selectedWeek}
@@ -131,18 +133,18 @@ const StudyScheduleScreen = () => {
             setOpen={setWeekOpen}
             setValue={setSelectedWeek}
             onOpen={onWeekOpen}
-            dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
+            dropDownContainerStyle={dropdownStyles.dropDownContainer}
           />
         </View>
       ) : null}
 
       <FlatList
-        style={{ top: 100, marginBottom: 100 }}
+        style={styles.contentContainer}
         data={schedule}
         keyExtractor={(item) => item.day}
         renderItem={({ item }) => (
           <View style={{ padding: 10 }}>
-            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>
+            <Text style={styles.textDate}>
               {new Date(item.day).toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -166,7 +168,7 @@ const StudyScheduleScreen = () => {
               )}
               renderDetail={(rowData) => (
                 <View style={{ marginTop: -12 }}>
-                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{rowData.ten_mon}</Text>
+                  <Text style={styles.textSubjectName}>{rowData.ten_mon}</Text>
                   <Text>
                     <MaterialIcons name="people-alt" color="#2596be" />
                     {'\t'}

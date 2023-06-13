@@ -6,11 +6,12 @@ import Modal from 'react-native-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import examScheduleAPIs from '../apis/ExamSchedule';
 import { Context } from '../utils/context';
+import styles from '../themes/screens/ExamScheduleScreen';
+import dropdownStyles from '../themes/components/DropDown'
 
 const widthArr = [200, 88, 56, 40];
 
 const ExamScheduleScreen = () => {
-  const windowWidth = Dimensions.get('window').width;
   const [context, setContext] = React.useContext(Context);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [schedule, setSchedule] = React.useState([]);
@@ -52,8 +53,8 @@ const ExamScheduleScreen = () => {
         isVisible={modalVisible}
         children={
           selectedSubject !== null ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff', width: windowWidth - 10 }}>
+            <View style={styles.modalContainer}>
+              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
                 <TableWrapper style={{ flexDirection: 'row' }}>
                   <Col
                     data={[
@@ -67,7 +68,7 @@ const ExamScheduleScreen = () => {
                       'Cơ sở',
                       'Hình thức thi',
                     ]}
-                    textStyle={{ fontWeight: 'bold', textAlign: 'center' }}
+                    textStyle={styles.tableHeader}
                     style={{ backgroundColor: '#2596be' }}
                     width={88}
                     heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
@@ -96,7 +97,7 @@ const ExamScheduleScreen = () => {
           )
         }
       ></Modal>
-      <View style={{ position: 'absolute', paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 3 }}>
+      <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}
           value={selectedSemester}
@@ -105,17 +106,17 @@ const ExamScheduleScreen = () => {
           })}
           setOpen={setSemesterOpen}
           setValue={setSelectedSemester}
-          dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
+          dropDownContainerStyle={dropdownStyles.dropDownContainer}
         />
       </View>
-      <View style={{ top: 100, marginBottom: 100 }}>
+      <View style={styles.contentContainer}>
         <View style={{ alignItems: 'center' }}>
           {schedule && schedule.length > 0 ? (
             <Table borderStyle={{ borderWidth: 1 }}>
               <Row
                 data={['Môn thi', 'Ngày thi', 'Bắt đầu', '']}
                 widthArr={[200, 88, 56, 40]}
-                textStyle={{ fontWeight: 'bold', textAlign: 'center' }}
+                textStyle={styles.tableHeader}
                 style={{ backgroundColor: '#2596be' }}
               />
               {schedule

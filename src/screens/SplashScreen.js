@@ -7,7 +7,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import styles from '../themes/SplashScreen';
+import styles from '../themes/screens/SplashScreen';
 
 const SplashScreen = ({ navigation }) => {
   return (

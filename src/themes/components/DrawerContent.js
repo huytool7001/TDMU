@@ -4,8 +4,16 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
-  userInfoSection: {
+  paddingLeft20: {
     paddingLeft: 20,
+  },
+  headerSection: {
+    flexDirection: 'row',
+    marginTop: '5%',
+  },
+  userInfoSection: { 
+    marginLeft: '5%', 
+    flexDirection: 'column' 
   },
   title: {
     fontSize: 16,
@@ -13,7 +21,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   caption: {
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 14,
   },
   row: {

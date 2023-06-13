@@ -4,6 +4,7 @@ import { View, Text, Button } from 'react-native';
 import Modal from 'react-native-modal';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
+import styles from '../themes/components/ReLoginAlert';
 
 const ReLoginAlert = () => {
   const [context, setContext] = React.useContext(Context);
@@ -30,7 +31,7 @@ const ReLoginAlert = () => {
       style={{ margin: 0 }}
       isVisible={context.expire}
       children={
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+        <View style={styles.container}>
           <Text>Phiên làm việc đã hết hạn, vui lòng đăng nhập lại</Text>
           <Button title="X Đóng" onPress={handleSignOut} color="#cc0000"></Button>
         </View>

@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  textForgotPassword: { color: '#085c8d', marginTop: 15 },
 });
 
 export default styles;

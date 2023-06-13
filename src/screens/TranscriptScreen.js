@@ -7,6 +7,8 @@ import Modal from 'react-native-modal';
 import { Context } from '../utils/context';
 import DropDownPicker from 'react-native-dropdown-picker';
 import transcriptAPIs from '../apis/Transcript';
+import styles from '../themes/screens/TranscriptScreen';
+import dropdownStyles from '../themes/components/DropDown';
 
 const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
 const widthArr = [200, 48, 48, 48, 40];
@@ -47,12 +49,12 @@ const TranscriptScreen = () => {
         isVisible={modalVisible}
         children={
           selectedSubject.length > 0 ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={styles.modalContainer}>
               <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
                 <Row
                   data={['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']}
                   widthArr={[120, 120, 120]}
-                  textStyle={{ fontWeight: 'bold', textAlign: 'center' }}
+                  textStyle={styles.tableHeader}
                   style={{ backgroundColor: '#2596be' }}
                 />
                 <Rows
@@ -72,7 +74,7 @@ const TranscriptScreen = () => {
           )
         }
       ></Modal>
-      <View style={{ position: 'absolute', paddingHorizontal: 5, maxWidth: windowWidth, zIndex: 3 }}>
+      <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}
           value={selectedSemester}
@@ -81,11 +83,11 @@ const TranscriptScreen = () => {
           })}
           setOpen={setSemesterOpen}
           setValue={setSelectedSemester}
-          dropDownContainerStyle={{ top: 0, position: 'relative', height: 400 }}
+          dropDownContainerStyle={dropdownStyles.dropDownContainer}
         />
       </View>
       {transcript && transcript.ds_diem_mon_hoc.length > 0 ? (
-        <View style={{ top: 100, marginBottom: 100 }}>
+        <View style={styles.contentContainer}>
           <View style={{ alignItems: 'center' }}>
             <Table borderStyle={{ borderWidth: 1 }}>
               <Row
@@ -133,36 +135,36 @@ const TranscriptScreen = () => {
                 ))}
             </Table>
           </View>
-          <View style={{ marginTop: 20, marginHorizontal: 32 }}>
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ flex: 2 }}>
+          <View style={styles.bottomSectionContainer}>
+            <View style={styles.flexRow}>
+              <View style={styles.flex2}>
                 <Text>Điểm trung bình học kỳ hệ 10: </Text>
               </View>
               <View style={{ flex: 1, alignItems: 'flex-end' }}>
                 <Text>{transcript.dtb_hk_he10}</Text>
               </View>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ flex: 2 }}>
+            <View style={styles.flexRow}>
+              <View style={styles.flex2}>
                 <Text>Điểm trung bình tích lũy hệ 10: </Text>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <View style={styles.flex1End}>
                 <Text>{transcript.dtb_tich_luy_he_10}</Text>
               </View>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ flex: 2 }}>
+            <View style={styles.flexRow}>
+              <View style={styles.flex2}>
                 <Text>Số tín chỉ đạt học kỳ: </Text>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <View style={styles.flex1End}>
                 <Text>{transcript.so_tin_chi_dat_hk}</Text>
               </View>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ flex: 2 }}>
+            <View style={styles.flexRow}>
+              <View style={styles.flex2}>
                 <Text>Số tín chỉ tích lũy: </Text>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <View style={styles.flex1End}>
                 <Text>{transcript.so_tin_chi_dat_tich_luy}</Text>
               </View>
             </View>
