@@ -15,6 +15,7 @@ const DrawerContent = (props) => {
   const [user, setUser] = React.useState({
     ten_day_du: '',
     email: '',
+    gioi_tinh: 'Nam',
   });
 
   React.useEffect(() => {
@@ -24,7 +25,7 @@ const DrawerContent = (props) => {
   const getUser = async () => {
     const result = await profileAPIs.get(context.token);
 
-    if(result.code === 200){
+    if (result.code === 200) {
       setUser(result.data);
     }
   };
@@ -34,7 +35,6 @@ const DrawerContent = (props) => {
       await GoogleSignin.signOut();
 
       const result = await authAPIs.signOut(context.token);
-      console.log(result)
 
       if (result.err) {
         Alert.alert('Oops!', result.err, [{ text: 'Ok' }]);
@@ -51,12 +51,14 @@ const DrawerContent = (props) => {
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
-          <View style={styles.paddingLeft20}>
+          <View style={styles.paddingLeft}>
             <View style={styles.headerSection}>
               <Avatar.Image
-                source={{
-                  uri: 'https://cdn.iconscout.com/icon/free/png-256/avatar-370-456322.png',
-                }}
+                source={
+                  user.gioi_tinh === 'Nữ'
+                    ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
+                    : require('../assets/male_boy_person_people_avatar_icon_159358.png')
+                }
                 size={50}
               />
               <View style={styles.userInfoSection}>
@@ -98,7 +100,7 @@ const DrawerContent = (props) => {
               onPress={() => {
                 props.navigation.navigate('Profile');
               }}
-            />            
+            />
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>

@@ -4,8 +4,8 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
-  paddingLeft20: {
-    paddingLeft: 20,
+  paddingLeft: {
+    paddingLeft: 16,
   },
   headerSection: {
     flexDirection: 'row',
