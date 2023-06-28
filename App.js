@@ -12,6 +12,7 @@
   import TranscriptScreen from './src/screens/TranscriptScreen';
   import ExamScheduleScreen from './src/screens/ExamScheduleScreen';
   import ReLoginAlert from './src/components/ReLoginAlert';
+import TuitionScreen from './src/screens/TuitionScreen';
 
   const Drawer = createDrawerNavigator();
 
@@ -47,6 +48,7 @@
               <Drawer.Screen name="StudySchedule" component={StudyScheduleScreen} options={{ title: 'Thời khóa biểu' }} />
               <Drawer.Screen name="Transcript" component={TranscriptScreen} options={{ title: 'Xem điểm' }} />
               <Drawer.Screen name="ExamSchedule" component={ExamScheduleScreen} options={{ title: 'Xem lịch thi' }} />
+              <Drawer.Screen name="Tuition" component={TuitionScreen} options={{ title: 'Xem học phí' }} />
               <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Hồ sơ' }} />
             </Drawer.Navigator>
           ) : (

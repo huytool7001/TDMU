@@ -95,6 +95,13 @@ const DrawerContent = (props) => {
               }}
             />
             <DrawerItem
+              label="Xem học phí"
+              icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
+              onPress={() => {
+                props.navigation.navigate('Tuition');
+              }}
+            />
+            <DrawerItem
               label="Hồ sơ"
               icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}
               onPress={() => {
