@@ -18,7 +18,8 @@ import TuitionScreen from './src/screens/TuitionScreen';
 
   function App() {
     const [context, setContext] = React.useState({
-      token: null,
+      token: '',
+      role: '',
       isLoading: false,
       expire: false,
     });
@@ -39,7 +40,7 @@ import TuitionScreen from './src/screens/TuitionScreen';
         <Spinner visible={context.isLoading} />
         {context.expire && <ReLoginAlert />}
         <NavigationContainer>
-          {context.token !== null ? (
+          {context.token ? (
             <Drawer.Navigator
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={{ drawerStyle: { width: 312 } }}

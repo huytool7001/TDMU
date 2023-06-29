@@ -20,7 +20,7 @@ const ReLoginAlert = () => {
         return;
       }
 
-      setContext({ ...context, token: null, expire: false });
+      setContext({ ...context, token: '', expire: false });
     } catch (error) {
       console.error(error);
     }

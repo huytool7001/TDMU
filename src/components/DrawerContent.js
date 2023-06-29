@@ -8,6 +8,7 @@ import styles from '../themes/components/DrawerContent';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
 import profileAPIs from '../apis/Profile';
+import { USER_ROLE } from '../common/constant';
 
 const DrawerContent = (props) => {
   const [context, setContext] = React.useContext(Context);
@@ -23,10 +24,14 @@ const DrawerContent = (props) => {
   }, []);
 
   const getUser = async () => {
-    const result = await profileAPIs.get(context.token);
+    const result = await profileAPIs.get(context.token, context.role);
 
     if (result.code === 200) {
-      setUser(result.data);
+      setUser({
+        ten_day_du: result.data.ten_day_du || result.data.ten_giang_vien,
+        email: result.data.email || result.data.email_1,
+        gioi_tinh: result.data.gioi_tinh || '',
+      });
     }
   };
 
@@ -41,7 +46,7 @@ const DrawerContent = (props) => {
         return;
       }
 
-      setContext({ ...context, token: null });
+      setContext({ ...context, token: '', role: '' });
     } catch (error) {
       console.error(error);
     }
@@ -55,7 +60,9 @@ const DrawerContent = (props) => {
             <View style={styles.headerSection}>
               <Avatar.Image
                 source={
-                  user.gioi_tinh === 'Nữ'
+                  context.role === USER_ROLE.teacher
+                    ? require('../assets/194935.png')
+                    : user.gioi_tinh === 'Nữ'
                     ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
                     : require('../assets/male_boy_person_people_avatar_icon_159358.png')
                 }
@@ -94,13 +101,15 @@ const DrawerContent = (props) => {
                 props.navigation.navigate('ExamSchedule');
               }}
             />
-            <DrawerItem
-              label="Xem học phí"
-              icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
-              onPress={() => {
-                props.navigation.navigate('Tuition');
-              }}
-            />
+            {context.role === USER_ROLE.student && (
+              <DrawerItem
+                label="Xem học phí"
+                icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
+                onPress={() => {
+                  props.navigation.navigate('Tuition');
+                }}
+              />
+            )}
             <DrawerItem
               label="Hồ sơ"
               icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}

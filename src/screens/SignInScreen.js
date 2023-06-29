@@ -83,7 +83,7 @@ const SignInScreen = () => {
       await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
       const result = await authAPIs.signIn(token.accessToken);
-      setContext({ ...context, token: result.access_token });
+      setContext({ ...context, token: result.access_token, role: result.roles });
       if (result.expires_in) {
         setTimeout(() => {
           setContext({ ...context, expire: true });
