@@ -11,8 +11,8 @@ import dropdownStyles from '../themes/components/DropDown';
 import tuitionAPIs from '../apis/Tuition';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const allSemesterWidthArr = [140, 102, 102, 40];
-const selectedSemesterWidthArr = [136, 40, 84, 84, 40];
+const allSemesterWidthArr = [136, 102, 102, 40];
+const selectedSemesterWidthArr = [136, 36, 84, 84, 40];
 const ds_da_thu_width_arr = [176, 102, 102];
 
 const TuitionScreen = () => {
@@ -152,223 +152,227 @@ const TuitionScreen = () => {
         />
       </View>
       <ScrollView>
-        <View style={styles.contentContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.tableTitle}>Danh sách phải thu</Text>
-          </View>
           {tuitions
             ? selectedSemester === 'all'
               ? tuitions.ds_hoc_phi?.length && (
-                  <Table borderStyle={{ borderWidth: 1 }}>
-                    <Row
-                      data={['Học kỳ', 'Học phí', 'Còn nợ', '']}
-                      widthArr={allSemesterWidthArr}
-                      textStyle={styles.tableHeader}
-                      style={{ backgroundColor: '#2596be' }}
-                    />
-                    {tuitions.ds_hoc_phi
-                      .map((hoc_ky) => [hoc_ky.ten_hoc_ky, hoc_ky.hoc_phi, hoc_ky.con_no, ''])
-                      .map((rowData, index) => (
-                        <TableWrapper key={index} style={{ flexDirection: 'row' }}>
-                          {rowData.map((cellData, cellIndex) => (
+                  <View style={{ ...styles.contentContainer, top: 70, marginBottom: 70 }}>
+                    <Table borderStyle={{ borderWidth: 1 }}>
+                      <Row
+                        data={['Học kỳ', 'Học phí', 'Còn nợ', '']}
+                        widthArr={allSemesterWidthArr}
+                        textStyle={styles.tableHeader}
+                        style={{ backgroundColor: '#2596be' }}
+                      />
+                      {tuitions.ds_hoc_phi
+                        .map((hoc_ky) => [hoc_ky.ten_hoc_ky, hoc_ky.hoc_phi, hoc_ky.con_no, ''])
+                        .map((rowData, index) => (
+                          <TableWrapper key={index} style={{ flexDirection: 'row' }}>
+                            {rowData.map((cellData, cellIndex) => (
+                              <Cell
+                                key={cellIndex}
+                                data={
+                                  cellIndex === 0 ? (
+                                    cellData
+                                  ) : cellIndex === rowData.length - 1 ? (
+                                    <Fontisto
+                                      name="nav-icon-list-a"
+                                      size={16}
+                                      onPress={() => {
+                                        setSelectedSemesterModal(tuitions.ds_hoc_phi[index]);
+                                        setAllSemesterModalVisible(true);
+                                      }}
+                                    />
+                                  ) : (
+                                    Number(cellData).toLocaleString('en-US')
+                                  )
+                                }
+                                textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
+                                style={
+                                  cellIndex === allSemesterWidthArr.length - 1
+                                    ? {
+                                        width: allSemesterWidthArr[cellIndex],
+                                        padding: 5,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                      }
+                                    : { width: allSemesterWidthArr[cellIndex], padding: 5 }
+                                }
+                              />
+                            ))}
+                          </TableWrapper>
+                        ))}
+                      <TableWrapper style={{ flexDirection: 'row' }}>
+                        {tuitions.ds_hoc_phi
+                          .reduce(
+                            (result, hoc_ky) => [
+                              'Tổng cộng',
+                              Number(result[1]) + Number(hoc_ky.hoc_phi),
+                              Number(result[2]) + Number(hoc_ky.con_no),
+                              '',
+                            ],
+                            ['Tổng cộng', 0, 0, ''],
+                          )
+                          .map((cellData, cellIndex) => (
                             <Cell
                               key={cellIndex}
                               data={
-                                cellIndex === 0 ? (
-                                  cellData
-                                ) : cellIndex === rowData.length - 1 ? (
-                                  <Fontisto
-                                    name="nav-icon-list-a"
-                                    size={16}
-                                    onPress={() => {
-                                      setSelectedSemesterModal(tuitions.ds_hoc_phi[index]);
-                                      setAllSemesterModalVisible(true);
-                                    }}
-                                  />
-                                ) : (
-                                  Number(cellData).toLocaleString('en-US')
-                                )
+                                cellIndex === 0 || cellIndex === allSemesterWidthArr.length - 1
+                                  ? cellData
+                                  : Number(cellData).toLocaleString('en-US')
                               }
-                              textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
-                              style={
-                                cellIndex === allSemesterWidthArr.length - 1
-                                  ? {
-                                      width: allSemesterWidthArr[cellIndex],
-                                      padding: 5,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                    }
-                                  : { width: allSemesterWidthArr[cellIndex], padding: 5 }
+                              textStyle={
+                                cellIndex === 0
+                                  ? { textAlign: 'left' }
+                                  : cellIndex === allSemesterWidthArr.length - 1
+                                  ? { textAlign: 'center' }
+                                  : { textAlign: 'right' }
                               }
+                              style={{ width: allSemesterWidthArr[cellIndex], padding: 5 }}
                             />
                           ))}
-                        </TableWrapper>
-                      ))}
-                    <TableWrapper style={{ flexDirection: 'row' }}>
-                      {tuitions.ds_hoc_phi
-                        .reduce(
-                          (result, hoc_ky) => [
-                            'Tổng cộng',
-                            Number(result[1]) + Number(hoc_ky.hoc_phi),
-                            Number(result[2]) + Number(hoc_ky.con_no),
-                            '',
-                          ],
-                          ['Tổng cộng', 0, 0, ''],
-                        )
-                        .map((cellData, cellIndex) => (
-                          <Cell
-                            key={cellIndex}
-                            data={
-                              cellIndex === 0 || cellIndex === allSemesterWidthArr.length - 1
-                                ? cellData
-                                : Number(cellData).toLocaleString('en-US')
-                            }
-                            textStyle={
-                              cellIndex === 0
-                                ? { textAlign: 'left' }
-                                : cellIndex === allSemesterWidthArr.length - 1
-                                ? { textAlign: 'center' }
-                                : { textAlign: 'right' }
-                            }
-                            style={{ width: allSemesterWidthArr[cellIndex], padding: 5 }}
-                          />
-                        ))}
-                    </TableWrapper>
-                  </Table>
+                      </TableWrapper>
+                    </Table>
+                  </View>
                 )
               : tuitions.ds_phai_thu?.length && (
-                  <Table borderStyle={{ borderWidth: 1 }} style={{ overFlow: 'scroll' }}>
-                    <Row
-                      data={['Môn học', 'TC', 'Học phí', 'Phải thu', '']}
-                      widthArr={selectedSemesterWidthArr}
-                      textStyle={styles.tableHeader}
-                      style={{ backgroundColor: '#2596be' }}
-                    />
-                    {tuitions.ds_phai_thu
-                      .map((mon) => [mon.dien_giai, mon.so_tin_chi_hp, mon.hoc_phi, mon.phai_thu, ''])
-                      .map((rowData, index) => (
-                        <TableWrapper key={index} style={{ flexDirection: 'row' }}>
-                          {rowData.map((cellData, cellIndex) => (
+                  <View style={styles.contentContainer}>
+                    <View style={styles.titleContainer}>
+                      <Text style={styles.tableTitle}>Danh sách phải thu</Text>
+                    </View>
+                    <Table borderStyle={{ borderWidth: 1 }} style={{ overFlow: 'scroll' }}>
+                      <Row
+                        data={['Môn học', 'TC', 'Học phí', 'Phải thu', '']}
+                        widthArr={selectedSemesterWidthArr}
+                        textStyle={styles.tableHeader}
+                        style={{ backgroundColor: '#2596be' }}
+                      />
+                      {tuitions.ds_phai_thu
+                        .map((mon) => [mon.dien_giai, mon.so_tin_chi_hp, mon.hoc_phi, mon.phai_thu, ''])
+                        .map((rowData, index) => (
+                          <TableWrapper key={index} style={{ flexDirection: 'row' }}>
+                            {rowData.map((cellData, cellIndex) => (
+                              <Cell
+                                key={cellIndex}
+                                data={
+                                  cellIndex === 0 ? (
+                                    cellData
+                                  ) : cellIndex === rowData.length - 1 ? (
+                                    <Fontisto
+                                      name="nav-icon-list-a"
+                                      size={16}
+                                      onPress={() => {
+                                        setSelectedSubject(tuitions.ds_phai_thu[index]);
+                                        setSelectedSemesterModalVisible(true);
+                                      }}
+                                    />
+                                  ) : (
+                                    Number(cellData).toLocaleString('en-US')
+                                  )
+                                }
+                                textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
+                                style={
+                                  cellIndex === selectedSemesterWidthArr.length - 1
+                                    ? {
+                                        width: selectedSemesterWidthArr[cellIndex],
+                                        padding: 5,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                      }
+                                    : { width: selectedSemesterWidthArr[cellIndex], padding: 5 }
+                                }
+                              />
+                            ))}
+                          </TableWrapper>
+                        ))}
+                      <TableWrapper style={{ flexDirection: 'row' }}>
+                        {tuitions.ds_phai_thu
+                          .reduce(
+                            (result, mon) => [
+                              'Tổng cộng',
+                              Number(result[1]) + Number(mon.so_tin_chi_hp),
+                              Number(result[2]) + Number(mon.hoc_phi),
+                              Number(result[3]) + Number(mon.phai_thu),
+                              '',
+                            ],
+                            ['Tổng cộng', 0, 0, 0, ''],
+                          )
+                          .map((cellData, cellIndex) => (
                             <Cell
                               key={cellIndex}
                               data={
-                                cellIndex === 0 ? (
-                                  cellData
-                                ) : cellIndex === rowData.length - 1 ? (
-                                  <Fontisto
-                                    name="nav-icon-list-a"
-                                    size={16}
-                                    onPress={() => {
-                                      setSelectedSubject(tuitions.ds_phai_thu[index]);
-                                      setSelectedSemesterModalVisible(true);
-                                    }}
-                                  />
-                                ) : (
-                                  Number(cellData).toLocaleString('en-US')
-                                )
+                                cellIndex === 0 || cellIndex === selectedSemesterWidthArr.length - 1
+                                  ? cellData
+                                  : Number(cellData).toLocaleString('en-US')
                               }
-                              textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
-                              style={
-                                cellIndex === selectedSemesterWidthArr.length - 1
-                                  ? {
-                                      width: selectedSemesterWidthArr[cellIndex],
-                                      padding: 5,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                    }
-                                  : { width: selectedSemesterWidthArr[cellIndex], padding: 5 }
+                              textStyle={
+                                cellIndex === 0
+                                  ? { textAlign: 'left' }
+                                  : cellIndex === selectedSemesterWidthArr.length - 1
+                                  ? { textAlign: 'center' }
+                                  : { textAlign: 'right' }
                               }
+                              style={{ width: selectedSemesterWidthArr[cellIndex], padding: 5 }}
                             />
                           ))}
-                        </TableWrapper>
-                      ))}
-                    <TableWrapper style={{ flexDirection: 'row' }}>
-                      {tuitions.ds_phai_thu
-                        .reduce(
-                          (result, mon) => [
-                            'Tổng cộng',
-                            Number(result[1]) + Number(mon.so_tin_chi_hp),
-                            Number(result[2]) + Number(mon.hoc_phi),
-                            Number(result[3]) + Number(mon.phai_thu),
-                            '',
-                          ],
-                          ['Tổng cộng', 0, 0, 0, ''],
-                        )
-                        .map((cellData, cellIndex) => (
-                          <Cell
-                            key={cellIndex}
-                            data={
-                              cellIndex === 0 || cellIndex === selectedSemesterWidthArr.length - 1
-                                ? cellData
-                                : Number(cellData).toLocaleString('en-US')
-                            }
-                            textStyle={
-                              cellIndex === 0
-                                ? { textAlign: 'left' }
-                                : cellIndex === selectedSemesterWidthArr.length - 1
-                                ? { textAlign: 'center' }
-                                : { textAlign: 'right' }
-                            }
-                            style={{ width: selectedSemesterWidthArr[cellIndex], padding: 5 }}
-                          />
-                        ))}
-                    </TableWrapper>
-                  </Table>
+                      </TableWrapper>
+                    </Table>
+                  </View>
                 )
             : null}
 
-          <View style={styles.titleContainer}>
-            <Text style={styles.tableTitle}>Danh sách đã thu</Text>
-          </View>
           {tuitions && tuitions.ds_da_thu?.length && (
-            <Table borderStyle={{ borderWidth: 1 }} style={{ overFlow: 'scroll' }}>
-              <Row
-                data={['Môn học', 'Đã thu', 'Ngày thu']}
-                widthArr={ds_da_thu_width_arr}
-                textStyle={styles.tableHeader}
-                style={{ backgroundColor: '#2596be' }}
-              />
-              {tuitions.ds_da_thu
-                .map((mon) => [mon.dien_giai, mon.da_thu, mon.ngay_thu])
-                .map((rowData, index) => (
-                  <TableWrapper key={index} style={{ flexDirection: 'row' }}>
-                    {rowData.map((cellData, cellIndex) => (
+            <View style={{ ...styles.contentContainer, top: -50, marginBottom: -50 }}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.tableTitle}>Danh sách đã thu</Text>
+              </View>
+              <Table borderStyle={{ borderWidth: 1 }} style={{ overFlow: 'scroll' }}>
+                <Row
+                  data={['Môn học', 'Đã thu', 'Ngày thu']}
+                  widthArr={ds_da_thu_width_arr}
+                  textStyle={styles.tableHeader}
+                  style={{ backgroundColor: '#2596be' }}
+                />
+                {tuitions.ds_da_thu
+                  .map((mon) => [mon.dien_giai, mon.da_thu, mon.ngay_thu])
+                  .map((rowData, index) => (
+                    <TableWrapper key={index} style={{ flexDirection: 'row' }}>
+                      {rowData.map((cellData, cellIndex) => (
+                        <Cell
+                          key={cellIndex}
+                          data={cellIndex === 1 ? Number(cellData).toLocaleString('en-US') : cellData}
+                          textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
+                          style={
+                            cellIndex === rowData.length - 1
+                              ? {
+                                  width: ds_da_thu_width_arr[cellIndex],
+                                  padding: 5,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }
+                              : { width: ds_da_thu_width_arr[cellIndex], padding: 5 }
+                          }
+                        />
+                      ))}
+                    </TableWrapper>
+                  ))}
+                <TableWrapper style={{ flexDirection: 'row' }}>
+                  {tuitions.ds_da_thu
+                    .reduce(
+                      (result, mon) => ['Tổng cộng', Number(result[1]) + Number(mon.da_thu), ''],
+                      ['Tổng cộng', 0, ''],
+                    )
+                    .map((cellData, cellIndex) => (
                       <Cell
                         key={cellIndex}
                         data={cellIndex === 1 ? Number(cellData).toLocaleString('en-US') : cellData}
                         textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
-                        style={
-                          cellIndex === rowData.length - 1
-                            ? {
-                                width: ds_da_thu_width_arr[cellIndex],
-                                padding: 5,
-                                display: 'flex',
-                                alignItems: 'center',
-                              }
-                            : { width: ds_da_thu_width_arr[cellIndex], padding: 5 }
-                        }
+                        style={{ width: ds_da_thu_width_arr[cellIndex], padding: 5 }}
                       />
                     ))}
-                  </TableWrapper>
-                ))}
-              <TableWrapper style={{ flexDirection: 'row' }}>
-                {tuitions.ds_da_thu
-                  .reduce(
-                    (result, mon) => ['Tổng cộng', Number(result[1]) + Number(mon.da_thu), ''],
-                    ['Tổng cộng', 0, ''],
-                  )
-                  .map((cellData, cellIndex) => (
-                    <Cell
-                      key={cellIndex}
-                      data={cellIndex === 1 ? Number(cellData).toLocaleString('en-US') : cellData}
-                      textStyle={cellIndex === 0 ? { textAlign: 'left' } : { textAlign: 'right' }}
-                      style={{ width: ds_da_thu_width_arr[cellIndex], padding: 5 }}
-                    />
-                  ))}
-              </TableWrapper>
-            </Table>
+                </TableWrapper>
+              </Table>
+            </View>
           )}
-        </View>
       </ScrollView>
     </View>
   );
