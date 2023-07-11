@@ -10,6 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@notifee/react-native": "^7.8.0",
+    "@react-native-firebase/app": "^18.1.0",
+    "@react-native-firebase/messaging": "^18.1.0",
     "@react-native-google-signin/google-signin": "^9.0.2",
     "@react-native-picker/picker": "^2.4.10",
     "@react-navigation/drawer": "^6.6.2",

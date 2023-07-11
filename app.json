@@ -1,4 +1,7 @@
 {
   "name": "TDMU",
-  "displayName": "TDMU"
+  "displayName": "TDMU",
+  "plugins": [
+    "@notifee/react-native"
+  ]
 }
