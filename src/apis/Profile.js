@@ -1,6 +1,6 @@
-import { API_URL, USER_ROLE } from '../common/constant';
+import { DKMH_API_URL, USER_ROLE } from '../common/constant';
 
-const url = `${API_URL}`;
+const url = `${DKMH_API_URL}`;
 
 class ProfileAPIs {
   constructor() {}

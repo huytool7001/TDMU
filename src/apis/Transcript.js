@@ -1,6 +1,6 @@
-import { API_URL } from '../common/constant';
+import { DKMH_API_URL } from '../common/constant';
 
-const url = `${API_URL}/srm`;
+const url = `${DKMH_API_URL}/srm`;
 
 class TranscriptAPIs {
   constructor() {}

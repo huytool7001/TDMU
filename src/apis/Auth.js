@@ -1,12 +1,14 @@
-import { API_URL } from '../common/constant';
+import { DKMH_API_URL, SERVER_API_URL } from '../common/constant';
+import messaging from '@react-native-firebase/messaging';
 
-const url = `${API_URL}/auth`;
+const dkmh_api_url = `${DKMH_API_URL}/auth`;
+const server_api_url = `${SERVER_API_URL}`;
 
 class AuthAPIs {
   constructor() {}
 
-  signIn = (token) => {
-    return fetch(`${url}/login`, {
+  signIn = async (token) => {
+    return fetch(`${dkmh_api_url}/login`, {
       method: 'post',
       body: new URLSearchParams({ username: 'user@gw', password: token, grant_type: 'password' }).toString(),
       headers: {
@@ -14,11 +16,28 @@ class AuthAPIs {
       },
     })
       .then((response) => response.json())
+      .then(async (response) => {
+        await messaging().registerDeviceForRemoteMessages();
+        const fcmToken = await messaging().getToken();
+
+        await fetch(`${server_api_url}/tokens`, {
+          method: 'post',
+          body: JSON.stringify({
+            deviceToken: fcmToken,
+            userId: response.userName,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        return response;
+      })
       .catch((err) => console.log(err));
   };
 
   signOut = (token) => {
-    return fetch(`${url}/logout`, {
+    return fetch(`${dkmh_api_url}/logout`, {
       method: 'post',
       headers: {
         Authorization: `Bearer ${token}`,

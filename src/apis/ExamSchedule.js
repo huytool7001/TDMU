@@ -1,6 +1,6 @@
-import { API_URL } from '../common/constant';
+import { DKMH_API_URL } from '../common/constant';
 
-const url = `${API_URL}/`;
+const url = `${DKMH_API_URL}/`;
 
 class ExamScheduleAPIs {
   constructor() {}
