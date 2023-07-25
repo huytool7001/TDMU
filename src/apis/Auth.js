@@ -25,6 +25,7 @@ class AuthAPIs {
           body: JSON.stringify({
             deviceToken: fcmToken,
             userId: response.userName,
+            userToken: response.access_token
           }),
           headers: {
             'Content-Type': 'application/json',

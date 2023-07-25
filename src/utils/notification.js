@@ -11,7 +11,7 @@ const onMessageReceived = async (message) => {
     id: 'default',
     name: 'Default Channel',
   });
-  Alert.alert('A new FCM message arrived!', JSON.stringify(message));
+  // Alert.alert('A new FCM message arrived!', JSON.stringify(message));
   // Display a notification
   await notifee.displayNotification({
     title: message.notification.title,

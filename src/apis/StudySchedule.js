@@ -1,12 +1,13 @@
-import { DKMH_API_URL } from '../common/constant';
+import { DKMH_API_URL, SERVER_API_URL } from '../common/constant';
 
-const url = `${DKMH_API_URL}/sch`;
+const dkmh_api_url = `${DKMH_API_URL}/sch`;
+const server_api_url = `${SERVER_API_URL}`;
 
 class StudyScheduleAPIs {
   constructor() {}
 
   getSemesters = (token) => {
-    return fetch(`${url}/w-locdshockytkbuser`, {
+    return fetch(`${dkmh_api_url}/w-locdshockytkbuser`, {
       method: 'post',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -33,8 +34,8 @@ class StudyScheduleAPIs {
       .catch((err) => console.log(err));
   };
 
-  getSchedule = (token, semester) => {
-    return fetch(`${url}/w-locdstkbtuanusertheohocky`, {
+  getSchedule = (token, semester, userId) => {
+    return fetch(`${dkmh_api_url}/w-locdstkbtuanusertheohocky`, {
       method: 'post',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -60,6 +61,20 @@ class StudyScheduleAPIs {
       }),
     })
       .then((response) => response.json())
+      .then(async (response) => {
+        await fetch(`${server_api_url}/notifications/schedule`, {
+          method: 'post',
+          body: JSON.stringify({
+            schedule: response.data,
+            userId,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        return response;
+      })
       .catch((err) => console.log(err));
   };
 }

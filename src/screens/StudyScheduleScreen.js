@@ -58,7 +58,7 @@ const StudyScheduleScreen = () => {
   }, [selectedSemester]);
 
   const getSchedule = async () => {
-    const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester);
+    const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester, context.userId);
 
     if (result.code === 200) {
       setData(result.data);

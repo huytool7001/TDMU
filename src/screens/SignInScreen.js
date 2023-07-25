@@ -57,7 +57,7 @@ const SignInScreen = () => {
   };
 
   const handleSignIn = async () => {
-    setContext({ ...context, token: 'tdmu' });
+    // setContext({ ...context, token: 'tdmu' });
     // setContext({ ...context, isLoading: true });
 
     // const result = await userAPIs.signIn({
@@ -83,7 +83,7 @@ const SignInScreen = () => {
       await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
       const result = await authAPIs.signIn(token.accessToken);
-      setContext({ ...context, token: result.access_token, role: result.roles });
+      setContext({ ...context, token: result.access_token, userId: result.userName, role: result.roles });
       if (result.expires_in) {
         setTimeout(() => {
           setContext({ ...context, expire: true });
