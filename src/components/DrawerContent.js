@@ -46,7 +46,9 @@ const DrawerContent = (props) => {
         return;
       }
 
-      setContext({ ...context, token: '', role: '' });
+      clearTimeout(context.timer);
+
+      setContext({ ...context, token: '', role: '', timer: null });
     } catch (error) {
       console.error(error);
     }

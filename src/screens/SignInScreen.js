@@ -59,19 +59,15 @@ const SignInScreen = () => {
   const handleSignIn = async () => {
     // setContext({ ...context, token: 'tdmu' });
     // setContext({ ...context, isLoading: true });
-
     // const result = await userAPIs.signIn({
     //   userId: data.username,
     //   password: data.password,
     // });
-
     // setContext({ ...context, isLoading: false });
-
     // if (result.err) {
     //   Alert.alert('Oops!', result.err, [{ text: 'Ok' }]);
     //   return;
     // }
-
     // if (result.token) {
     //   setContext({ ...context, token: result.token });
     // }
@@ -83,12 +79,15 @@ const SignInScreen = () => {
       await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
       const result = await authAPIs.signIn(token.accessToken);
-      setContext({ ...context, token: result.access_token, userId: result.userName, role: result.roles });
-      if (result.expires_in) {
-        setTimeout(() => {
+      setContext({
+        ...context,
+        token: result.access_token,
+        userId: result.userName,
+        role: result.roles,
+        timer: setTimeout(() => {
           setContext({ ...context, expire: true });
-        }, result.expires_in * 1000);
-      }
+        }, result.expires_in * 1000),
+      });
     } catch (error) {
       console.log(error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

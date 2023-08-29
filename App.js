@@ -23,6 +23,7 @@ function App() {
     userId: '',
     isLoading: false,
     expire: false,
+    timer: null,
   });
 
   const getCurrentUser = async () => {
