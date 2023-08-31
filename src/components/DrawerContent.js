@@ -79,26 +79,26 @@ const DrawerContent = (props) => {
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
               label="Trang chủ"
-              icon={(color, size) => <Icon name="home-outline" size={size} color={color} />}
+              icon={(color) => <Icon name="home" size={18} color={color} />}
               onPress={() => props.navigation.navigate('Home')}
             />
             <DrawerItem
               label="Thời khóa biểu"
-              icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
+              icon={(color) => <Icon name="calendar" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('StudySchedule');
               }}
             />
             <DrawerItem
               label="Xem điểm"
-              icon={(color, size) => <Icon name="table-search" size={size} color={color} />}
+              icon={(color) => <Icon name="numeric-9-plus-box-multiple" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Transcript');
               }}
             />
             <DrawerItem
               label="Xem lịch thi"
-              icon={(color, size) => <Icon name="calendar-text" size={size} color={color} />}
+              icon={(color) => <Icon name="pencil-box-multiple" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('ExamSchedule');
               }}
@@ -106,7 +106,7 @@ const DrawerContent = (props) => {
             {context.role === USER_ROLE.student && (
               <DrawerItem
                 label="Xem học phí"
-                icon={(color, size) => <Icon name="calendar" size={size} color={color} />}
+                icon={(color) => <Icon name="account-cash" size={18} color={color} />}
                 onPress={() => {
                   props.navigation.navigate('Tuition');
                 }}
@@ -114,7 +114,7 @@ const DrawerContent = (props) => {
             )}
             <DrawerItem
               label="Hồ sơ"
-              icon={(color, size) => <Icon name="cog-outline" size={size} color={color} />}
+              icon={(color) => <Icon name="badge-account-horizontal" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Profile');
               }}
@@ -125,7 +125,9 @@ const DrawerContent = (props) => {
       <Drawer.Section>
         <DrawerItem
           label="Đăng xuất"
-          icon={(color, size) => <Icon name="exit-to-app" size={size} color={color} />}
+          icon={(color) => (
+            <Icon name="exit-to-app" size={18} color={color} style={{ transform: [{ rotateY: '180deg' }] }} />
+          )}
           onPress={handleSignOut}
         />
       </Drawer.Section>
