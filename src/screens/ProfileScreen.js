@@ -68,7 +68,7 @@ const ProfileScreen = () => {
       </View>
     </ScrollView>
   );
-  
+
   const ClassTab = () => (
     <View style={styles.profileContainer}>
       <View>
@@ -126,7 +126,7 @@ const ProfileScreen = () => {
   const renderScene = SceneMap({
     profile: ProfileTab,
     class: ClassTab,
-    teacher: TeacherTab
+    teacher: TeacherTab,
   });
 
   return (
@@ -142,7 +142,9 @@ const ProfileScreen = () => {
         />
       </View>
       <TabView
-        renderTabBar={props => <TabBar {...props} style={{ backgroundColor: '#2596be' }}/>}
+        renderTabBar={(props) => (
+          <TabBar {...props} style={{ backgroundColor: '#2596be' }} labelStyle={{ fontWeight: 'bold' }} />
+        )}
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
