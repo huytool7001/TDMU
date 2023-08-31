@@ -7,7 +7,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import examScheduleAPIs from '../apis/ExamSchedule';
 import { Context } from '../utils/context';
 import styles from '../themes/screens/ExamScheduleScreen';
-import dropdownStyles from '../themes/components/DropDown'
+import dropdownStyles from '../themes/components/DropDown';
 
 const widthArr = [200, 88, 56, 40];
 
@@ -49,6 +49,7 @@ const ExamScheduleScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <Modal
+        onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={

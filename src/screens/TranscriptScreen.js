@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Dimensions, TouchableOpacity, Button } from 'react-native';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import Entypo from 'react-native-vector-icons/Entypo'
+import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import { Context } from '../utils/context';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -45,6 +45,7 @@ const TranscriptScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <Modal
+        onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
