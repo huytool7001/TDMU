@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
   bottomSectionContainer: { marginTop: 20, marginHorizontal: 32 },
   flexRow: { display: 'flex', flexDirection: 'row' },
   flex2: { flex: 2 },
-  flex1End: { flex: 1, alignItems: 'flex-end' }
+  flex1End: { flex: 1, alignItems: 'flex-end' },
+  notFoundText: { textAlign: 'center', fontStyle: 'italic' },
 });
 
 export default styles;

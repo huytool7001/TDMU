@@ -63,17 +63,17 @@ const TuitionScreen = () => {
         style={{ margin: 0 }}
         isVisible={allSemesterModalVisible}
         children={
-          selectedSemesterModal !== null ? (
-            <View style={styles.modalContainer}>
-              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                <TableWrapper style={{ flexDirection: 'row' }}>
-                  <Col
-                    data={['Học kỳ', 'Học phí', 'Miễn giảm', 'Phải thu', 'Đã thu', 'Còn nợ']}
-                    textStyle={styles.tableHeader}
-                    style={{ backgroundColor: '#2596be' }}
-                    width={88}
-                    heightArr={[30, 30, 30, 30, 30, 30]}
-                  />
+          <View style={styles.modalContainer}>
+            <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+              <TableWrapper style={{ flexDirection: 'row' }}>
+                <Col
+                  data={['Học kỳ', 'Học phí', 'Miễn giảm', 'Phải thu', 'Đã thu', 'Còn nợ']}
+                  textStyle={styles.tableHeader}
+                  style={{ backgroundColor: '#2596be' }}
+                  width={88}
+                  heightArr={[30, 30, 30, 30, 30, 30]}
+                />
+                {selectedSemesterModal !== null ? (
                   <Col
                     data={[
                       selectedSemesterModal.ten_hoc_ky,
@@ -86,13 +86,13 @@ const TuitionScreen = () => {
                     textStyle={{ textAlign: 'center' }}
                     heightArr={[30, 30, 30, 30, 30, 30]}
                   />
-                </TableWrapper>
-              </Table>
-              <Button title="Đóng X" onPress={() => setAllSemesterModalVisible(false)} color="#cc0000"></Button>
-            </View>
-          ) : (
-            <View></View>
-          )
+                ) : (
+                  <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[180]} />
+                )}
+              </TableWrapper>
+            </Table>
+            <Button title="Đóng X" onPress={() => setAllSemesterModalVisible(false)} color="#cc0000"></Button>
+          </View>
         }
       ></Modal>
       <Modal
@@ -100,17 +100,17 @@ const TuitionScreen = () => {
         style={{ margin: 0 }}
         isVisible={selectedSemesterModalVisible}
         children={
-          selectedSubject !== null ? (
-            <View style={styles.modalContainer}>
-              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                <TableWrapper style={{ flexDirection: 'row' }}>
-                  <Col
-                    data={['Mã môn', 'Diễn giải', 'Số TC', 'Học phí', 'Học lại', 'Miễn giảm', 'Phải thu']}
-                    textStyle={styles.tableHeader}
-                    style={{ backgroundColor: '#2596be' }}
-                    width={88}
-                    heightArr={[30, 30, 30, 30, 30, 30, 30]}
-                  />
+          <View style={styles.modalContainer}>
+            <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+              <TableWrapper style={{ flexDirection: 'row' }}>
+                <Col
+                  data={['Mã môn', 'Diễn giải', 'Số TC', 'Học phí', 'Học lại', 'Miễn giảm', 'Phải thu']}
+                  textStyle={styles.tableHeader}
+                  style={{ backgroundColor: '#2596be' }}
+                  width={88}
+                  heightArr={[30, 30, 30, 30, 30, 30, 30]}
+                />
+                {selectedSubject !== null ? (
                   <Col
                     data={[
                       selectedSubject.ma_mon,
@@ -132,13 +132,13 @@ const TuitionScreen = () => {
                     textStyle={{ textAlign: 'center' }}
                     heightArr={[30, 30, 30, 30, 30, 30, 30]}
                   />
-                </TableWrapper>
-              </Table>
-              <Button title="Đóng X" onPress={() => setSelectedSemesterModalVisible(false)} color="#cc0000"></Button>
-            </View>
-          ) : (
-            <View></View>
-          )
+                ) : (
+                  <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[210]} />
+                )}
+              </TableWrapper>
+            </Table>
+            <Button title="Đóng X" onPress={() => setSelectedSemesterModalVisible(false)} color="#cc0000"></Button>
+          </View>
         }
       ></Modal>
       <View style={dropdownStyles.container}>

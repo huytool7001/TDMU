@@ -49,15 +49,15 @@ const TranscriptScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          selectedSubject.length > 0 ? (
-            <View style={styles.modalContainer}>
-              <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
-                <Row
-                  data={['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']}
-                  widthArr={[120, 120, 120]}
-                  textStyle={styles.tableHeader}
-                  style={{ backgroundColor: '#2596be' }}
-                />
+          <View style={styles.modalContainer}>
+            <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
+              <Row
+                data={['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']}
+                widthArr={[120, 120, 120]}
+                textStyle={styles.tableHeader}
+                style={{ backgroundColor: '#2596be' }}
+              />
+              {selectedSubject.length > 0 ? (
                 <Rows
                   data={selectedSubject.map((rowData) => [
                     rowData.ten_thanh_phan,
@@ -67,12 +67,12 @@ const TranscriptScreen = () => {
                   textStyle={{ textAlign: 'center' }}
                   widthArr={[120, 120, 120]}
                 />
-              </Table>
-              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-            </View>
-          ) : (
-            <View></View>
-          )
+              ) : (
+                <Row data={['Không tìm thấy dữ liệu']} textStyle={styles.notFoundText} />
+              )}
+            </Table>
+            <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
+          </View>
         }
       ></Modal>
       <View style={dropdownStyles.container}>

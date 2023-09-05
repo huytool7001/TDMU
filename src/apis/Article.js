@@ -14,11 +14,10 @@ class ArticleAPIs {
       body: JSON.stringify({
         filter: {
           is_hien_thi: true,
-          is_hinh_dai_dien: false,
         },
         additional: {
           paging: {
-            limit: 10,
+            limit: 100,
             page: 1,
           },
           ordering: [
@@ -48,7 +47,6 @@ class ArticleAPIs {
         filter: {
           id,
           is_hinh_dai_dien: false,
-          is_quyen_xem: false,
           is_noi_dung: true,
         },
         additional: {
