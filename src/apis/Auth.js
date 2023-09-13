@@ -20,7 +20,7 @@ class AuthAPIs {
         await messaging().registerDeviceForRemoteMessages();
         const fcmToken = await messaging().getToken();
 
-        await fetch(`${server_api_url}/tokens`, {
+        await fetch(`${server_api_url}/users`, {
           method: 'post',
           body: JSON.stringify({
             deviceToken: fcmToken,
