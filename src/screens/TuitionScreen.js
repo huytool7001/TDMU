@@ -322,7 +322,7 @@ const TuitionScreen = () => {
               )
           : null}
 
-        {tuitions && tuitions.ds_da_thu?.length && (
+        {tuitions?.ds_da_thu?.length ? (
           <View style={{ ...styles.contentContainer, top: -50, marginBottom: -50 }}>
             <View style={styles.titleContainer}>
               <Text style={styles.tableTitle}>Danh sách đã thu</Text>
@@ -374,6 +374,8 @@ const TuitionScreen = () => {
               </TableWrapper>
             </Table>
           </View>
+        ) : (
+          <></>
         )}
       </ScrollView>
     </View>

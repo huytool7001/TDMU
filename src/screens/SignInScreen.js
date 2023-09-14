@@ -90,6 +90,7 @@ const SignInScreen = () => {
       });
     } catch (error) {
       console.log(error);
+      Alert.alert('Error', error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
       } else if (error.code === statusCodes.IN_PROGRESS) {
