@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -26,9 +22,7 @@ const SplashScreen = ({ navigation }) => {
         <Text style={styles.text}>Sign in to continue</Text>
         <View style={styles.button}>
           <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
-            <LinearGradient
-              colors={['#2596be', '#085c8d']}
-              style={styles.signIn}>
+            <LinearGradient colors={['#2596be', '#085c8d']} style={styles.signIn}>
               <Text style={styles.textSign}>Get Started</Text>
               <MaterialIcons name="navigate-next" color="#fff" size={20} />
             </LinearGradient>

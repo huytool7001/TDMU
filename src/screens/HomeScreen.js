@@ -6,6 +6,7 @@ import * as Animatable from 'react-native-animatable';
 import RenderHtml from 'react-native-render-html';
 import styles from '../themes/screens/HomeScreen';
 import articleAPIs from '../apis/Article';
+import announcementApis from '../apis/Announcement';
 
 const HomeScreen = () => {
   const { width } = useWindowDimensions();
@@ -13,6 +14,7 @@ const HomeScreen = () => {
     tb: [],
     hd: [],
   });
+  const [announcements, setAnnouncements] = React.useState([]);
 
   const [selected, setSelected] = React.useState({
     key: '',
@@ -31,17 +33,33 @@ const HomeScreen = () => {
         hd: result.data.ds_bai_viet.filter((bai_viet) => bai_viet.ky_hieu === 'hd'),
       });
     }
+
+    const announcements = await announcementApis.search({ showing: true });
+    if (announcements.length) {
+      setAnnouncements(
+        announcements.map((announcement) => ({
+          id: announcement.id,
+          tieu_de: announcement.title,
+          ngay_dang_tin: announcement.createdAt,
+          noi_dung: announcement.body,
+        })),
+      );
+    }
   };
 
   const getSelected = async (key, index) => {
-    const result = await articleAPIs.get(data[`${key}`][index].id);
-    if (result.code === 200) {
-      setSelected({
-        ...selected,
-        key,
-        index,
-        data: result.data.ds_bai_viet[0],
-      });
+    if (key === 'announcement') {
+      setSelected({ ...selected, key, index, data: announcements[index] });
+    } else {
+      const result = await articleAPIs.get(data[`${key}`][index].id);
+      if (result.code === 200) {
+        setSelected({
+          ...selected,
+          key,
+          index,
+          data: result.data.ds_bai_viet[0],
+        });
+      }
     }
   };
 
@@ -93,7 +111,7 @@ const HomeScreen = () => {
                   setModalVisible(true);
                 }}
               >
-                <AntDesign name="pushpin" color="#000" /> {bai_viet.tieu_de}
+                <AntDesign name="play" color="#000" /> {bai_viet.tieu_de}
               </Text>
             </View>
           ))}
@@ -110,6 +128,26 @@ const HomeScreen = () => {
                 style={styles.text}
                 onPress={() => {
                   getSelected('hd', index);
+                  setModalVisible(true);
+                }}
+              >
+                <AntDesign name="play" color="#000" /> {bai_viet.tieu_de}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+      <View style={{ marginTop: 8 }}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Khác</Text>
+        </View>
+        <View style={styles.container}>
+          {announcements.map((bai_viet, index) => (
+            <View key={bai_viet.id} style={styles.article}>
+              <Text
+                style={styles.text}
+                onPress={() => {
+                  getSelected('announcement', index);
                   setModalVisible(true);
                 }}
               >
