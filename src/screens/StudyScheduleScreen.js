@@ -177,7 +177,9 @@ const StudyScheduleScreen = () => {
                   <Text>
                     <MaterialIcons name="place" color="#2596be" />
                     {'\t'}
-                    {rowData.ma_phong.slice(0, rowData.ma_phong.indexOf('-', rowData.ma_phong.indexOf('-') + 1))}
+                    {rowData.ma_phong.split('-').length === 4
+                      ? `${rowData.ma_phong.split('-')[0]}-${rowData.ma_phong.split('-')[1]}`
+                      : rowData.ma_phong.split('-')[0]}
                   </Text>
                   <Text>
                     <MaterialIcons name="access-time" color="#2596be" />
