@@ -7,8 +7,10 @@ import RenderHtml from 'react-native-render-html';
 import styles from '../themes/screens/HomeScreen';
 import articleAPIs from '../apis/Article';
 import announcementApis from '../apis/Announcement';
+import { useIsFocused } from '@react-navigation/native';
 
 const HomeScreen = () => {
+  const isFocus = useIsFocused();
   const { width } = useWindowDimensions();
   const [data, setData] = React.useState({
     tb: [],
@@ -35,9 +37,9 @@ const HomeScreen = () => {
     }
 
     const announcements = await announcementApis.search({ showing: true });
-    if (announcements.length) {
+    if (announcements.announcements.length) {
       setAnnouncements(
-        announcements.map((announcement) => ({
+        announcements.announcements.map((announcement) => ({
           id: announcement.id,
           tieu_de: announcement.title,
           ngay_dang_tin: announcement.createdAt,
@@ -65,7 +67,7 @@ const HomeScreen = () => {
 
   React.useEffect(() => {
     getData();
-  }, []);
+  }, [isFocus]);
 
   return (
     <ScrollView

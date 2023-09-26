@@ -8,10 +8,12 @@ import examScheduleAPIs from '../apis/ExamSchedule';
 import { Context } from '../utils/context';
 import styles from '../themes/screens/ExamScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
+import { useIsFocused } from '@react-navigation/native';
 
 const widthArr = [200, 88, 56, 40];
 
 const ExamScheduleScreen = () => {
+  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [schedule, setSchedule] = React.useState([]);
@@ -25,7 +27,7 @@ const ExamScheduleScreen = () => {
 
   React.useEffect(() => {
     getSemesters();
-  }, []);
+  }, [isFocus]);
 
   const getSemesters = async () => {
     const result = await examScheduleAPIs.getSemesters(context.token);

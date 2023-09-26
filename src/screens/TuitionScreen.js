@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Dimensions, Button, Text } from 'react-native';
+import { View, Button, Text } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, TableWrapper, Cell, Col } from 'react-native-table-component';
 import Modal from 'react-native-modal';
@@ -10,12 +10,14 @@ import styles from '../themes/screens/TuitionScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import tuitionAPIs from '../apis/Tuition';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 
 const allSemesterWidthArr = [136, 102, 102, 40];
 const selectedSemesterWidthArr = [136, 36, 84, 84, 40];
 const ds_da_thu_width_arr = [176, 102, 102];
 
 const TuitionScreen = () => {
+  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [tuitions, setTuitions] = React.useState(null);
 
@@ -32,7 +34,7 @@ const TuitionScreen = () => {
 
   React.useEffect(() => {
     getSemesters();
-  }, []);
+  }, [isFocus]);
 
   const getSemesters = async () => {
     const result = await tuitionAPIs.getSemesters(context.token);

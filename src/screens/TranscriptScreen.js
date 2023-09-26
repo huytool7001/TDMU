@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Dimensions, TouchableOpacity, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -9,12 +9,13 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import transcriptAPIs from '../apis/Transcript';
 import styles from '../themes/screens/TranscriptScreen';
 import dropdownStyles from '../themes/components/DropDown';
+import { useIsFocused } from '@react-navigation/native';
 
 const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
 const widthArr = [200, 48, 48, 48, 40];
 
 const TranscriptScreen = () => {
-  const windowWidth = Dimensions.get('window').width;
+  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [data, setData] = React.useState([]);
@@ -28,7 +29,7 @@ const TranscriptScreen = () => {
 
   React.useEffect(() => {
     getTranscripts();
-  }, []);
+  }, [isFocus]);
 
   const getTranscripts = async () => {
     const result = await transcriptAPIs.getTranscripts(context.token);

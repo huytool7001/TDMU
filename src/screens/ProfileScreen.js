@@ -6,14 +6,16 @@ import styles from '../themes/screens/ProfileScreen';
 import { Avatar } from 'react-native-paper';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 
 const ProfileScreen = () => {
+  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
     getProfile();
-  }, []);
+  }, [isFocus]);
 
   const getProfile = async () => {
     const result = await profileAPIs.get(context.token);

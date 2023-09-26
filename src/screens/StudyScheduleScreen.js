@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Dimensions, FlatList } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -7,9 +7,10 @@ import studyScheduleAPIs from '../apis/StudySchedule';
 import { Context } from '../utils/context';
 import styles from '../themes/screens/StudyScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
+import { useIsFocused } from '@react-navigation/native';
 
 const StudyScheduleScreen = () => {
-  const windowWidth = Dimensions.get('window').width;
+  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [data, setData] = React.useState(null);
   const [schedule, setSchedule] = React.useState([]);
@@ -25,7 +26,7 @@ const StudyScheduleScreen = () => {
 
   React.useEffect(() => {
     getSemesters();
-  }, []);
+  }, [isFocus]);
 
   const getSemesters = async () => {
     const result = await studyScheduleAPIs.getSemesters(context.token);
