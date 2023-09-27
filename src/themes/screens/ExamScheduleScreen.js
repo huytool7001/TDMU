@@ -4,8 +4,8 @@ const windowWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   modalContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  modalTable: { backgroundColor: '#fff', width: windowWidth - 10 },
-  contentContainer: { flex: 1, top: 100, marginBottom: 100 },
+  modalTable: { backgroundColor: '#fff' },
+  contentContainer: { top: 100, marginBottom: 100, justifyContent: 'center', width: '100%' },
   tableHeader: { fontWeight: 'bold', textAlign: 'center' },
 });
 

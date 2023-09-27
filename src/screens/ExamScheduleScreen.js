@@ -94,6 +94,7 @@ const ExamScheduleScreen = () => {
                       selectedSubject.hinh_thuc_thi,
                     ]}
                     textStyle={{ textAlign: 'center' }}
+                    width={300}
                     heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
                   />
                 ) : (
@@ -117,52 +118,59 @@ const ExamScheduleScreen = () => {
           dropDownContainerStyle={dropdownStyles.dropDownContainer}
         />
       </View>
-      <ScrollView style={styles.contentContainer}>
-        <View style={{ alignItems: 'center', marginBottom: 60 }}>
-          {schedule && schedule.length > 0 ? (
-            <Table borderStyle={{ borderWidth: 1 }}>
-              <Row
-                data={['Môn thi', 'Ngày thi', 'Phòng', 'Bắt đầu', '']}
-                widthArr={widthArr}
-                textStyle={styles.tableHeader}
-                style={{ backgroundColor: '#2596be' }}
-              />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.contentContainer} horizontal={true}>
+        {schedule && schedule.length > 0 ? (
+          <Table borderStyle={{ borderWidth: 1 }}>
+            <Row
+              data={['Môn thi', 'Ngày thi', 'Phòng', 'Bắt đầu', '']}
+              widthArr={widthArr}
+              textStyle={styles.tableHeader}
+              style={{ backgroundColor: '#2596be' }}
+            />
+            <ScrollView>
               {schedule
                 .map((mon) => [mon.ten_mon, mon.ngay_thi, mon.ma_phong || mon.ghep_phong, mon.gio_bat_dau, ''])
                 .map((rowData, index) => (
-                  <ScrollView>
-                    <TableWrapper borderStyle={{ borderWidth: 1 }} key={index} style={{ flexDirection: 'row' }}>
-                      {rowData.map((cellData, cellIndex) => (
-                        <Cell
-                          key={cellIndex}
-                          data={
-                            cellIndex === rowData.length - 1 ? (
-                              <Fontisto
-                                name="nav-icon-list-a"
-                                size={16}
-                                onPress={() => {
-                                  setModalVisible(true);
-                                  setSelectedSubject(schedule[index]);
-                                }}
-                              />
-                            ) : (
-                              cellData
-                            )
-                          }
-                          textStyle={{ textAlign: 'left' }}
-                          style={
-                            cellIndex !== 0
-                              ? { width: widthArr[cellIndex], padding: 5, display: 'flex', alignItems: 'center' }
-                              : { width: widthArr[cellIndex], padding: 5 }
-                          }
-                        />
-                      ))}
-                    </TableWrapper>
-                  </ScrollView>
+                  <TableWrapper borderStyle={{ borderWidth: 1 }} key={index} style={{ flexDirection: 'row' }}>
+                    {rowData.map((cellData, cellIndex) => (
+                      <Cell
+                        key={cellIndex}
+                        data={
+                          cellIndex === rowData.length - 1 ? (
+                            <Fontisto
+                              name="nav-icon-list-a"
+                              size={16}
+                              onPress={() => {
+                                setSelectedSubject(schedule[index]);
+                                setModalVisible(true);
+                              }}
+                            />
+                          ) : (
+                            cellData
+                          )
+                        }
+                        textStyle={{ textAlign: 'left' }}
+                        style={
+                          cellIndex !== 0
+                            ? {
+                                width: widthArr[cellIndex],
+                                padding: 5,
+                                display: 'flex',
+                                alignItems: 'center',
+                                borderWidth: 1,
+                              }
+                            : { width: widthArr[cellIndex], padding: 5, borderWidth: 1 }
+                        }
+                      />
+                    ))}
+                  </TableWrapper>
                 ))}
-            </Table>
-          ) : null}
-        </View>
+              <TableWrapper borderStyle={{ borderWidth: 1 }}>
+                <Row data={[]} height={40} />
+              </TableWrapper>
+            </ScrollView>
+          </Table>
+        ) : null}
       </ScrollView>
     </View>
   );
