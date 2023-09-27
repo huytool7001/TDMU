@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, Button, ScrollView } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -8,6 +8,9 @@ import { Context } from '../utils/context';
 import styles from '../themes/screens/StudyScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
+import { USER_ROLE } from '../common/constant';
+import Modal from 'react-native-modal';
+import { Table, Row, Rows } from 'react-native-table-component';
 
 const StudyScheduleScreen = () => {
   const isFocus = useIsFocused();
@@ -23,6 +26,10 @@ const StudyScheduleScreen = () => {
   //week
   const [weekOpen, setWeekOpen] = React.useState(false);
   const [selectedWeek, setSelectedWeek] = React.useState(null);
+
+  //students
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [students, setStudents] = React.useState([]);
 
   React.useEffect(() => {
     getSemesters();
@@ -85,6 +92,18 @@ const StudyScheduleScreen = () => {
     }
   };
 
+  const getStudents = async (id) => {
+    const result = await studyScheduleAPIs.getStudents(context.token, id);
+
+    if (result.code === 200) {
+      setStudents(result.data.ds_sinh_vien);
+    } else {
+      setStudents([]);
+    }
+
+    setModalVisible(true);
+  };
+
   React.useEffect(() => {
     if (data !== null && selectedWeek !== null) {
       let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
@@ -110,6 +129,46 @@ const StudyScheduleScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        onBackButtonPress={() => setModalVisible(false)}
+        style={{ margin: 0 }}
+        isVisible={modalVisible}
+        children={
+          <>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContainer} horizontal={true}>
+              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                <Row
+                  data={['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'Điện thoại', 'Email']}
+                  textStyle={styles.tableHeader}
+                  style={{ backgroundColor: '#2596be' }}
+                  widthArr={[120, 120, 60, 100, 100, 200]}
+                />
+                {students.length !== null ? (
+                  <ScrollView>
+                    <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                      <Rows
+                        data={students.map((rowData) => [
+                          rowData.ma_sinh_vien,
+                          rowData.ho_lot,
+                          rowData.ten,
+                          rowData.ma_lop,
+                          rowData.dien_thoai,
+                          rowData.e_mail,
+                        ])}
+                        textStyle={{ textAlign: 'center' }}
+                        widthArr={[120, 120, 60, 100, 100, 200]}
+                      />
+                    </Table>
+                  </ScrollView>
+                ) : (
+                  <Row data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} />
+                )}
+              </Table>
+            </ScrollView>
+            <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
+          </>
+        }
+      ></Modal>
       <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}
@@ -170,11 +229,13 @@ const StudyScheduleScreen = () => {
               renderDetail={(rowData) => (
                 <View style={{ marginTop: -12 }}>
                   <Text style={styles.textSubjectName}>{rowData.ten_mon}</Text>
-                  <Text>
-                    <MaterialIcons name="people-alt" color="#2596be" />
-                    {'\t'}
-                    {rowData.ten_giang_vien}
-                  </Text>
+                  {context.role === USER_ROLE.student && (
+                    <Text>
+                      <MaterialIcons name="how-to-reg" color="#2596be" />
+                      {'\t'}
+                      {rowData.ten_giang_vien}
+                    </Text>
+                  )}
                   <Text>
                     <MaterialIcons name="place" color="#2596be" />
                     {'\t'}
@@ -191,6 +252,13 @@ const StudyScheduleScreen = () => {
                         .gio_ket_thuc
                     }
                   </Text>
+                  {context.role === USER_ROLE.teacher && (
+                    <Text onPress={() => getStudents(rowData.id_to_hoc)}>
+                      <MaterialIcons name="format-list-bulleted" color="#2596be" />
+                      {'\t'}
+                      Danh Sách Sinh Viên
+                    </Text>
+                  )}
                 </View>
               )}
             />

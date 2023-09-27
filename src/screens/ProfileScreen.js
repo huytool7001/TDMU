@@ -7,6 +7,7 @@ import { Avatar } from 'react-native-paper';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
+import { USER_ROLE } from '../common/constant';
 
 const ProfileScreen = () => {
   const isFocus = useIsFocused();
@@ -18,7 +19,7 @@ const ProfileScreen = () => {
   }, [isFocus]);
 
   const getProfile = async () => {
-    const result = await profileAPIs.get(context.token);
+    const result = await profileAPIs.get(context.token, context.role);
     if (result.code === 200) {
       setUser(result.data);
     }
@@ -136,22 +137,51 @@ const ProfileScreen = () => {
       <View style={styles.avatarContainer}>
         <Avatar.Image
           source={
-            user?.gioi_tinh === 'Nữ'
-              ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
-              : require('../assets/male_boy_person_people_avatar_icon_159358.png')
+            context.role === USER_ROLE.student
+              ? user?.gioi_tinh === 'Nữ'
+                ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
+                : require('../assets/male_boy_person_people_avatar_icon_159358.png')
+              : require('../assets/25957597.jpg')
           }
           size={100}
         />
       </View>
-      <TabView
-        renderTabBar={(props) => (
-          <TabBar {...props} style={{ backgroundColor: '#2596be' }} labelStyle={{ fontWeight: 'bold' }} />
-        )}
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-      />
+      {context.role === USER_ROLE.student ? (
+        <TabView
+          renderTabBar={(props) => (
+            <TabBar {...props} style={{ backgroundColor: '#2596be' }} labelStyle={{ fontWeight: 'bold' }} />
+          )}
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: layout.width }}
+        />
+      ) : (
+        <ScrollView style={styles.profileContainer}>
+          <View>
+            <View style={styles.formGroupContainer}>
+              <Text style={styles.title}>Mã GV</Text>
+              <Text>{user?.ma_giang_vien}</Text>
+            </View>
+            <View style={styles.formGroupContainer}>
+              <Text style={styles.title}>Họ tên</Text>
+              <Text>{user?.ten_giang_vien}</Text>
+            </View>
+            <View style={styles.formGroupContainer}>
+              <Text style={styles.title}>Học vị</Text>
+              <Text>{user?.hoc_vi}</Text>
+            </View>
+            <View style={styles.formGroupContainer}>
+              <Text style={styles.title}>Điện thoại</Text>
+              <Text>{user?.dien_thoai_1}</Text>
+            </View>
+            <View style={styles.formGroupContainer}>
+              <Text style={styles.title}>Email</Text>
+              <Text>{user?.email_1}</Text>
+            </View>
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 };

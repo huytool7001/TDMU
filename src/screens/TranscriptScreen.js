@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, ScrollView } from 'react-native';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -10,13 +10,24 @@ import transcriptAPIs from '../apis/Transcript';
 import styles from '../themes/screens/TranscriptScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
-
-const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
-const widthArr = [200, 48, 48, 48, 40];
+import { USER_ROLE } from '../common/constant';
 
 const TranscriptScreen = () => {
-  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
+
+  const header =
+    context.role === USER_ROLE.student
+      ? ['Môn học', 'Số TC', 'TK(10)', 'KQ', '']
+      : ['Môn học', 'Nhóm tổ', 'Sỉ số', 'DSSV'];
+  const widthArr = context.role === USER_ROLE.student ? [200, 48, 48, 48, 40] : [196, 92, 48, 48];
+
+  const modalHeader =
+    context.role === USER_ROLE.student
+      ? ['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']
+      : ['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'KTDK', 'KTHP'];
+  const modalWidthArr = context.role === USER_ROLE.student ? [120, 120, 120] : [120, 120, 60, 100, 48, 48];
+
+  const isFocus = useIsFocused();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [data, setData] = React.useState([]);
   const [transcript, setTranscript] = React.useState(null);
@@ -28,20 +39,47 @@ const TranscriptScreen = () => {
   const [selectedSubject, setSelectedSubject] = React.useState([]);
 
   React.useEffect(() => {
-    getTranscripts();
+    getData();
   }, [isFocus]);
 
+  const getData = async () => {
+    if (context.role === USER_ROLE.student) {
+      const result = await transcriptAPIs.getTranscripts(context.token);
+      if (result.code === 200) {
+        setData(result.data.ds_diem_hocky);
+        setSelectedSemester(0);
+      }
+    } else {
+      const semester = await transcriptAPIs.getSemesters(context.token);
+      if (semester.code === 200) {
+        setData(semester.data.ds_hoc_ky);
+        setSelectedSemester(semester.data.ds_hoc_ky[0].hoc_ky);
+      }
+    }
+  };
+
   const getTranscripts = async () => {
-    const result = await transcriptAPIs.getTranscripts(context.token);
+    const result = await transcriptAPIs.getTranscripts(context.token, selectedSemester, context.role);
     if (result.code === 200) {
-      setData(result.data.ds_diem_hocky);
-      setSelectedSemester(0);
+      setTranscript({ ds_diem_mon_hoc: result.data.ds_nhom_to });
     }
   };
 
   React.useEffect(() => {
-    setTranscript(data[selectedSemester]);
+    if (context.role == USER_ROLE.student) {
+      setTranscript(data[selectedSemester]);
+    } else {
+      getTranscripts();
+    }
   }, [data, selectedSemester]);
+
+  const getStudents = async (id) => {
+    const result = await transcriptAPIs.getStudents(context.token, id);
+    if (result.code === 200) {
+      setSelectedSubject(result.data.ds_sinh_vien);
+      setModalVisible(true);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -50,30 +88,45 @@ const TranscriptScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          <View style={styles.modalContainer}>
-            <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
-              <Row
-                data={['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']}
-                widthArr={[120, 120, 120]}
-                textStyle={styles.tableHeader}
-                style={{ backgroundColor: '#2596be' }}
-              />
-              {selectedSubject.length > 0 ? (
-                <Rows
-                  data={selectedSubject.map((rowData) => [
-                    rowData.ten_thanh_phan,
-                    rowData.trong_so,
-                    rowData.diem_thanh_phan,
-                  ])}
-                  textStyle={{ textAlign: 'center' }}
-                  widthArr={[120, 120, 120]}
-                />
-              ) : (
-                <Row data={['Không tìm thấy dữ liệu']} textStyle={styles.notFoundText} />
-              )}
-            </Table>
+          <>
+            <ScrollView horizontal={true}>
+              <View style={styles.modalContainer}>
+                <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
+                  <Row
+                    data={modalHeader}
+                    widthArr={modalWidthArr}
+                    textStyle={styles.tableHeader}
+                    style={{ backgroundColor: '#2596be' }}
+                  />
+                  {selectedSubject.length > 0 ? (
+                    <ScrollView>
+                      <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                        <Rows
+                          data={selectedSubject.map((rowData) =>
+                            context.role === USER_ROLE.student
+                              ? [rowData.ten_thanh_phan, rowData.trong_so, rowData.diem_thanh_phan]
+                              : [
+                                  rowData.ma_sv,
+                                  rowData.ho_lot_sv,
+                                  rowData.ten_sv,
+                                  rowData.ma_lop,
+                                  rowData.ds_diem_tp[1].diem,
+                                  rowData.ds_diem_tp[2].diem,
+                                ],
+                          )}
+                          textStyle={{ textAlign: 'center' }}
+                          widthArr={modalWidthArr}
+                        />
+                      </Table>
+                    </ScrollView>
+                  ) : (
+                    <Row data={['Không tìm thấy dữ liệu']} textStyle={styles.notFoundText} />
+                  )}
+                </Table>
+              </View>
+            </ScrollView>
             <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-          </View>
+          </>
         }
       ></Modal>
       <View style={dropdownStyles.container}>
@@ -81,7 +134,7 @@ const TranscriptScreen = () => {
           open={semesterOpen}
           value={selectedSemester}
           items={data.map((hoc_ky, index) => {
-            return { label: hoc_ky.ten_hoc_ky, value: index };
+            return { label: hoc_ky.ten_hoc_ky, value: context.role === USER_ROLE.student ? index : hoc_ky.hoc_ky };
           })}
           setOpen={setSemesterOpen}
           setValue={setSelectedSemester}
@@ -99,7 +152,11 @@ const TranscriptScreen = () => {
                 style={{ backgroundColor: '#2596be' }}
               />
               {transcript.ds_diem_mon_hoc
-                .map((mon) => [mon.ten_mon, mon.so_tin_chi, mon.diem_tk, mon.ket_qua, ''])
+                .map((mon) =>
+                  context.role === USER_ROLE.student
+                    ? [mon.ten_mon, mon.so_tin_chi, mon.diem_tk, mon.ket_qua, '']
+                    : [mon.ten_mon, mon.nhom_to, mon.sl_dk, ''],
+                )
                 .map((rowData, index) => (
                   <TableWrapper key={index} style={{ flexDirection: 'row' }}>
                     {rowData.map((cellData, cellIndex) => (
@@ -111,11 +168,15 @@ const TranscriptScreen = () => {
                               name="nav-icon-list-a"
                               size={16}
                               onPress={() => {
-                                setModalVisible(true);
-                                setSelectedSubject(transcript.ds_diem_mon_hoc[index].ds_diem_thanh_phan);
+                                if (context.role === USER_ROLE.student) {
+                                  setSelectedSubject(transcript.ds_diem_mon_hoc[index].ds_diem_thanh_phan);
+                                  setModalVisible(true);
+                                } else {
+                                  getStudents(transcript.ds_diem_mon_hoc[index].id_to_hoc);
+                                }
                               }}
                             />
-                          ) : cellIndex === rowData.length - 2 ? (
+                          ) : context.role === USER_ROLE.student && cellIndex === rowData.length - 2 ? (
                             cellData === 1 ? (
                               <Entypo name="check" size={16} color="green" />
                             ) : (
@@ -137,40 +198,42 @@ const TranscriptScreen = () => {
                 ))}
             </Table>
           </View>
-          <View style={styles.bottomSectionContainer}>
-            <View style={styles.flexRow}>
-              <View style={styles.flex2}>
-                <Text>Điểm trung bình học kỳ hệ 10: </Text>
+          {context.role === USER_ROLE.student && (
+            <View style={styles.bottomSectionContainer}>
+              <View style={styles.flexRow}>
+                <View style={styles.flex2}>
+                  <Text>Điểm trung bình học kỳ hệ 10: </Text>
+                </View>
+                <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                  <Text>{transcript.dtb_hk_he10}</Text>
+                </View>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <Text>{transcript.dtb_hk_he10}</Text>
+              <View style={styles.flexRow}>
+                <View style={styles.flex2}>
+                  <Text>Điểm trung bình tích lũy hệ 10: </Text>
+                </View>
+                <View style={styles.flex1End}>
+                  <Text>{transcript.dtb_tich_luy_he_10}</Text>
+                </View>
+              </View>
+              <View style={styles.flexRow}>
+                <View style={styles.flex2}>
+                  <Text>Số tín chỉ đạt học kỳ: </Text>
+                </View>
+                <View style={styles.flex1End}>
+                  <Text>{transcript.so_tin_chi_dat_hk}</Text>
+                </View>
+              </View>
+              <View style={styles.flexRow}>
+                <View style={styles.flex2}>
+                  <Text>Số tín chỉ tích lũy: </Text>
+                </View>
+                <View style={styles.flex1End}>
+                  <Text>{transcript.so_tin_chi_dat_tich_luy}</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.flexRow}>
-              <View style={styles.flex2}>
-                <Text>Điểm trung bình tích lũy hệ 10: </Text>
-              </View>
-              <View style={styles.flex1End}>
-                <Text>{transcript.dtb_tich_luy_he_10}</Text>
-              </View>
-            </View>
-            <View style={styles.flexRow}>
-              <View style={styles.flex2}>
-                <Text>Số tín chỉ đạt học kỳ: </Text>
-              </View>
-              <View style={styles.flex1End}>
-                <Text>{transcript.so_tin_chi_dat_hk}</Text>
-              </View>
-            </View>
-            <View style={styles.flexRow}>
-              <View style={styles.flex2}>
-                <Text>Số tín chỉ tích lũy: </Text>
-              </View>
-              <View style={styles.flex1End}>
-                <Text>{transcript.so_tin_chi_dat_tich_luy}</Text>
-              </View>
-            </View>
-          </View>
+          )}
         </View>
       ) : null}
     </View>

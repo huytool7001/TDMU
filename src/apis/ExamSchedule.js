@@ -1,4 +1,4 @@
-import { DKMH_API_URL } from '../common/constant';
+import { DKMH_API_URL, USER_ROLE } from '../common/constant';
 
 const url = `${DKMH_API_URL}/`;
 
@@ -34,7 +34,38 @@ class ExamScheduleAPIs {
       .catch((err) => console.log(err));
   };
 
-  getSchedule = (token, semester) => {
+  getSchedule = (token, semester, role = USER_ROLE.student) => {
+    if (role === USER_ROLE.teacher) {
+      return fetch(`${url}/epm/w-loclichthitonghoptheodoituong`, {
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          hoc_ky: semester,
+          id_du_lieu: '',
+          is_dk_coi_thi: false,
+          loai_doi_tuong: 2,
+          ngay_thi: '',
+          additional: {
+            paging: {
+              limit: 100,
+              page: 1,
+            },
+            ordering: [
+              {
+                name: null,
+                order_type: null,
+              },
+            ],
+          },
+        }),
+      })
+        .then((response) => response.json())
+        .catch((err) => console.log(err));
+    }
+
     return fetch(`${url}/epm/w-locdslichthisvtheohocky`, {
       method: 'post',
       headers: {

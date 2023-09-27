@@ -33,7 +33,7 @@ class StudyScheduleAPIs {
       .catch((err) => console.log(err));
   };
 
-  getSchedule = (token, semester, userId) => {
+  getSchedule = (token, semester) => {
     return fetch(`${dkmh_api_url}/w-locdstkbtuanusertheohocky`, {
       method: 'post',
       headers: {
@@ -48,6 +48,36 @@ class StudyScheduleAPIs {
         additional: {
           paging: {
             limit: 100,
+            page: 1,
+          },
+          ordering: [
+            {
+              name: null,
+              order_type: null,
+            },
+          ],
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .catch((err) => console.log(err));
+  };
+
+  getStudents = (token, id) => {
+    return fetch(`${dkmh_api_url}/w-locdssinhvientheotohoc`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        filter: {
+          id_to_hoc: id,
+          id_sinh_hoat: '0',
+        },
+        additional: {
+          paging: {
+            limit: 500,
             page: 1,
           },
           ordering: [

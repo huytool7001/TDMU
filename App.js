@@ -16,7 +16,7 @@ import ExamScheduleScreen from './src/screens/ExamScheduleScreen';
 import ReLoginAlert from './src/components/ReLoginAlert';
 import TuitionScreen from './src/screens/TuitionScreen';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import { NOTIFICATION_TIMER } from './src/common/constant';
+import { NOTIFICATION_TIMER, USER_ROLE } from './src/common/constant';
 import ReactNativeModal from 'react-native-modal';
 import userApis from './src/apis/User';
 
@@ -162,7 +162,9 @@ function App() {
                 ),
               }}
             />
-            <Drawer.Screen name="Tuition" component={TuitionScreen} options={{ title: 'Xem học phí' }} />
+            {context.role === USER_ROLE.student && (
+              <Drawer.Screen name="Tuition" component={TuitionScreen} options={{ title: 'Xem học phí' }} />
+            )}
             <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Hồ sơ' }} />
           </Drawer.Navigator>
         ) : (

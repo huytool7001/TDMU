@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Dimensions, Button } from 'react-native';
+import { View, ScrollView, Button } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Table, Row, TableWrapper, Cell, Col } from 'react-native-table-component';
+import { Table, Row, TableWrapper, Cell, Col, Rows } from 'react-native-table-component';
 import Modal from 'react-native-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import examScheduleAPIs from '../apis/ExamSchedule';
@@ -9,8 +9,9 @@ import { Context } from '../utils/context';
 import styles from '../themes/screens/ExamScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
+import { USER_ROLE } from '../common/constant';
 
-const widthArr = [200, 88, 56, 40];
+const widthArr = [132, 88, 72, 56, 40];
 
 const ExamScheduleScreen = () => {
   const isFocus = useIsFocused();
@@ -42,9 +43,13 @@ const ExamScheduleScreen = () => {
   }, [selectedSemester]);
 
   const getSchedule = async () => {
-    const result = await examScheduleAPIs.getSchedule(context.token, selectedSemester);
+    const result = await examScheduleAPIs.getSchedule(context.token, selectedSemester, context.role);
     if (result.code === 200) {
-      setSchedule(result.data.ds_lich_thi);
+      if (context.role === USER_ROLE.student) {
+        setSchedule(result.data.ds_lich_thi);
+      } else {
+        setSchedule(result.lich_coi_thi_can_bo.data.ds_lich_thi);
+      }
     }
   };
 
@@ -112,51 +117,53 @@ const ExamScheduleScreen = () => {
           dropDownContainerStyle={dropdownStyles.dropDownContainer}
         />
       </View>
-      <View style={styles.contentContainer}>
-        <View style={{ alignItems: 'center' }}>
+      <ScrollView style={styles.contentContainer}>
+        <View style={{ alignItems: 'center', marginBottom: 60 }}>
           {schedule && schedule.length > 0 ? (
             <Table borderStyle={{ borderWidth: 1 }}>
               <Row
-                data={['Môn thi', 'Ngày thi', 'Bắt đầu', '']}
-                widthArr={[200, 88, 56, 40]}
+                data={['Môn thi', 'Ngày thi', 'Phòng', 'Bắt đầu', '']}
+                widthArr={widthArr}
                 textStyle={styles.tableHeader}
                 style={{ backgroundColor: '#2596be' }}
               />
               {schedule
-                .map((mon) => [mon.ten_mon, mon.ngay_thi, mon.gio_bat_dau, ''])
+                .map((mon) => [mon.ten_mon, mon.ngay_thi, mon.ma_phong || mon.ghep_phong, mon.gio_bat_dau, ''])
                 .map((rowData, index) => (
-                  <TableWrapper key={index} style={{ flexDirection: 'row' }}>
-                    {rowData.map((cellData, cellIndex) => (
-                      <Cell
-                        key={cellIndex}
-                        data={
-                          cellIndex === rowData.length - 1 ? (
-                            <Fontisto
-                              name="nav-icon-list-a"
-                              size={16}
-                              onPress={() => {
-                                setModalVisible(true);
-                                setSelectedSubject(schedule[index]);
-                              }}
-                            />
-                          ) : (
-                            cellData
-                          )
-                        }
-                        textStyle={{ textAlign: 'left' }}
-                        style={
-                          cellIndex !== 0
-                            ? { width: widthArr[cellIndex], padding: 5, display: 'flex', alignItems: 'center' }
-                            : { width: widthArr[cellIndex], padding: 5 }
-                        }
-                      />
-                    ))}
-                  </TableWrapper>
+                  <ScrollView>
+                    <TableWrapper borderStyle={{ borderWidth: 1 }} key={index} style={{ flexDirection: 'row' }}>
+                      {rowData.map((cellData, cellIndex) => (
+                        <Cell
+                          key={cellIndex}
+                          data={
+                            cellIndex === rowData.length - 1 ? (
+                              <Fontisto
+                                name="nav-icon-list-a"
+                                size={16}
+                                onPress={() => {
+                                  setModalVisible(true);
+                                  setSelectedSubject(schedule[index]);
+                                }}
+                              />
+                            ) : (
+                              cellData
+                            )
+                          }
+                          textStyle={{ textAlign: 'left' }}
+                          style={
+                            cellIndex !== 0
+                              ? { width: widthArr[cellIndex], padding: 5, display: 'flex', alignItems: 'center' }
+                              : { width: widthArr[cellIndex], padding: 5 }
+                          }
+                        />
+                      ))}
+                    </TableWrapper>
+                  </ScrollView>
                 ))}
             </Table>
           ) : null}
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

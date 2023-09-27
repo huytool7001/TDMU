@@ -8,10 +8,12 @@ import styles from '../themes/screens/HomeScreen';
 import articleAPIs from '../apis/Article';
 import announcementApis from '../apis/Announcement';
 import { useIsFocused } from '@react-navigation/native';
+import { Context } from '../utils/context';
 
 const HomeScreen = () => {
   const isFocus = useIsFocused();
   const { width } = useWindowDimensions();
+  const [context, setContext] = React.useContext(Context);
   const [data, setData] = React.useState({
     tb: [],
     hd: [],
@@ -36,7 +38,7 @@ const HomeScreen = () => {
       });
     }
 
-    const announcements = await announcementApis.search({ showing: true });
+    const announcements = await announcementApis.search({ showing: true, userId: context.userId });
     if (announcements.announcements.length) {
       setAnnouncements(
         announcements.announcements.map((announcement) => ({
