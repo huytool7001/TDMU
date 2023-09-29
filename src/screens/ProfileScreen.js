@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text, useWindowDimensions, Image } from 'react-native';
 import { Context } from '../utils/context';
 import profileAPIs from '../apis/Profile';
 import styles from '../themes/screens/ProfileScreen';
@@ -72,6 +72,33 @@ const ProfileScreen = () => {
     </ScrollView>
   );
 
+  const TeacherProfileTab = () => (
+    <ScrollView style={styles.profileContainer}>
+      <View>
+        <View style={styles.formGroupContainer}>
+          <Text style={styles.title}>Mã GV</Text>
+          <Text>{user?.ma_giang_vien}</Text>
+        </View>
+        <View style={styles.formGroupContainer}>
+          <Text style={styles.title}>Họ tên</Text>
+          <Text>{user?.ten_giang_vien}</Text>
+        </View>
+        <View style={styles.formGroupContainer}>
+          <Text style={styles.title}>Học vị</Text>
+          <Text>{user?.hoc_vi}</Text>
+        </View>
+        <View style={styles.formGroupContainer}>
+          <Text style={styles.title}>Điện thoại</Text>
+          <Text>{user?.dien_thoai_1}</Text>
+        </View>
+        <View style={styles.formGroupContainer}>
+          <Text style={styles.title}>Email</Text>
+          <Text>{user?.email_1}</Text>
+        </View>
+      </View>
+    </ScrollView>
+  );
+
   const ClassTab = () => (
     <View style={styles.profileContainer}>
       <View>
@@ -121,67 +148,55 @@ const ProfileScreen = () => {
   // tab
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: 'profile', title: 'Thông tin' },
-    { key: 'class', title: 'Khóa học' },
-    { key: 'teacher', title: 'CVHT' },
-  ]);
-  const renderScene = SceneMap({
-    profile: ProfileTab,
-    class: ClassTab,
-    teacher: TeacherTab,
-  });
+  const [routes] = React.useState(
+    context.role === USER_ROLE.student
+      ? [
+          { key: 'profile', title: 'Thông tin' },
+          { key: 'class', title: 'Khóa học' },
+          { key: 'teacher', title: 'CVHT' },
+        ]
+      : [{ key: 'profile', title: 'Thông tin' }],
+  );
+  const renderScene = SceneMap(
+    context.role === USER_ROLE.student
+      ? {
+          profile: ProfileTab,
+          class: ClassTab,
+          teacher: TeacherTab,
+        }
+      : { profile: TeacherProfileTab },
+  );
 
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.avatarContainer}>
+        <Image
+          source={require('../assets/tn2-8506.jpg')}
+          resizeMode="cover"
+          resizeMethod="auto"
+          style={styles.avatarBackground}
+        />
         <Avatar.Image
           source={
             context.role === USER_ROLE.student
               ? user?.gioi_tinh === 'Nữ'
                 ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
                 : require('../assets/male_boy_person_people_avatar_icon_159358.png')
-              : require('../assets/25957597.jpg')
+              : require('../assets/3542609.png')
           }
-          size={100}
+          size={120}
+          style={{ marginTop: '-15%', backgroundColor: 'transparent' }}
         />
       </View>
-      {context.role === USER_ROLE.student ? (
-        <TabView
-          renderTabBar={(props) => (
-            <TabBar {...props} style={{ backgroundColor: '#2596be' }} labelStyle={{ fontWeight: 'bold' }} />
-          )}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-        />
-      ) : (
-        <ScrollView style={styles.profileContainer}>
-          <View>
-            <View style={styles.formGroupContainer}>
-              <Text style={styles.title}>Mã GV</Text>
-              <Text>{user?.ma_giang_vien}</Text>
-            </View>
-            <View style={styles.formGroupContainer}>
-              <Text style={styles.title}>Họ tên</Text>
-              <Text>{user?.ten_giang_vien}</Text>
-            </View>
-            <View style={styles.formGroupContainer}>
-              <Text style={styles.title}>Học vị</Text>
-              <Text>{user?.hoc_vi}</Text>
-            </View>
-            <View style={styles.formGroupContainer}>
-              <Text style={styles.title}>Điện thoại</Text>
-              <Text>{user?.dien_thoai_1}</Text>
-            </View>
-            <View style={styles.formGroupContainer}>
-              <Text style={styles.title}>Email</Text>
-              <Text>{user?.email_1}</Text>
-            </View>
-          </View>
-        </ScrollView>
-      )}
+      <TabView
+        renderTabBar={(props) => (
+          <TabBar {...props} style={{ backgroundColor: '#2596be' }} labelStyle={{ fontWeight: 'bold' }} />
+        )}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+      />
     </View>
   );
 };

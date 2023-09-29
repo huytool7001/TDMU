@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -8,6 +8,7 @@ import styles from '../themes/screens/SplashScreen';
 const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor='#fff'/>
       <View style={styles.header}>
         <Animatable.Image
           animation="zoomInDown"
