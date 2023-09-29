@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Button, ScrollView } from 'react-native';
+import { View, Text, FlatList, Button, ScrollView, TouchableOpacity } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -8,9 +8,11 @@ import { Context } from '../utils/context';
 import styles from '../themes/screens/StudyScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
-import { USER_ROLE } from '../common/constant';
+import { NOTIFICATION_TIMER, USER_ROLE } from '../common/constant';
 import Modal from 'react-native-modal';
 import { Table, Row, Rows } from 'react-native-table-component';
+import userApis from '../apis/User';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const StudyScheduleScreen = () => {
   const isFocus = useIsFocused();
@@ -31,8 +33,14 @@ const StudyScheduleScreen = () => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [students, setStudents] = React.useState([]);
 
+  //timer
+  const [timer, setTimer] = React.useState(NOTIFICATION_TIMER.SCHEDULE);
+  const [timerModalVisible, setTimerModalVisible] = React.useState(false);
+  const [pickerVisible, setPickerVisible] = React.useState(false);
+
   React.useEffect(() => {
     getSemesters();
+    getUser();
   }, [isFocus]);
 
   const getSemesters = async () => {
@@ -127,8 +135,61 @@ const StudyScheduleScreen = () => {
     setSemesterOpen(false);
   }, []);
 
+  const getUser = async () => {
+    const user = await userApis.get(context.userId);
+
+    if (user) {
+      setTimer(user.timer.schedule);
+    }
+  };
+
+  React.useEffect(() => {
+    userApis.update({
+      'timer.schedule': timer,
+    });
+  }, [timer]);
+
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        onBackButtonPress={() => setTimerModalVisible(false)}
+        isVisible={timerModalVisible}
+        children={
+          <View
+            style={{
+              backgroundColor: '#bcecff',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 150,
+              borderRadius: 4,
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>Thông báo trước giờ học</Text>
+            <View style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}>
+              <Text>
+                {Math.floor(timer / 3600000)} giờ {Math.floor((timer % 3600000) / 60000)} phút
+              </Text>
+              <MaterialIcons name="edit" size={20} onPress={() => setPickerVisible(true)} />
+            </View>
+            <Button title="Đóng X" onPress={() => setTimerModalVisible(false)} color="#cc0000"></Button>
+          </View>
+        }
+      />
+      {pickerVisible && (
+        <RNDateTimePicker
+          mode="time"
+          is24Hour={true}
+          value={new Date(1970, 0, 1, timer / 3600000, (timer % 3600000) / 60000, 0)}
+          minuteInterval={5}
+          onChange={(e, date) => {
+            setPickerVisible(false);
+            if (e.type === 'set') {
+              setTimer(date.getHours() * 3600000 + date.getMinutes() * 60000);
+            }
+          }}
+        />
+      )}
+
       <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
@@ -265,6 +326,25 @@ const StudyScheduleScreen = () => {
           </View>
         )}
       />
+
+      <TouchableOpacity
+        style={{
+          borderWidth: 1,
+          borderColor: 'rgba(0,0,0,0.2)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 70,
+          position: 'absolute',
+          bottom: 20,
+          right: 20,
+          height: 70,
+          backgroundColor: '#2596be',
+          borderRadius: 100,
+        }}
+        onPress={() => setTimerModalVisible(true)}
+      >
+        <MaterialIcons name="access-alarm" size={30} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  contentContainer: { top: 100, marginBottom: 100 },
+  contentContainer: { top: 120, marginBottom: 120 },
   textDate: { fontWeight: 'bold', fontSize: 20, marginBottom: 20 },
   textSubjectName: { fontWeight: 'bold', fontSize: 16 },
   modalContainer: { alignItems: 'center', justifyContent: 'center', padding: 10 },
