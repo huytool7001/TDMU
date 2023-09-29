@@ -63,12 +63,13 @@ const DrawerContent = (props) => {
               <Avatar.Image
                 source={
                   context.role === USER_ROLE.teacher
-                    ? require('../assets/194935.png')
+                    ? require('../assets/3542609.png')
                     : user.gioi_tinh === 'Nữ'
                     ? require('../assets/avatar_female_woman_person_people_white_tone_icon_159360.png')
                     : require('../assets/male_boy_person_people_avatar_icon_159358.png')
                 }
                 size={50}
+                style={{ backgroundColor: 'transparent' }}
               />
               <View style={styles.userInfoSection}>
                 <Title style={styles.title}>{user.ten_day_du}</Title>
@@ -90,14 +91,14 @@ const DrawerContent = (props) => {
               }}
             />
             <DrawerItem
-              label="Xem điểm"
+              label="Điểm"
               icon={(color) => <Icon name="numeric-9-plus-box-multiple" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('Transcript');
               }}
             />
             <DrawerItem
-              label="Xem lịch thi"
+              label="Lịch thi"
               icon={(color) => <Icon name="pencil-box-multiple" size={18} color={color} />}
               onPress={() => {
                 props.navigation.navigate('ExamSchedule');
@@ -105,7 +106,7 @@ const DrawerContent = (props) => {
             />
             {context.role === USER_ROLE.student && (
               <DrawerItem
-                label="Xem học phí"
+                label="Học phí"
                 icon={(color) => <Icon name="account-cash" size={18} color={color} />}
                 onPress={() => {
                   props.navigation.navigate('Tuition');
