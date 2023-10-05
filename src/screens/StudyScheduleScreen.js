@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Button, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Button, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -161,24 +161,41 @@ const StudyScheduleScreen = () => {
         onBackButtonPress={() => setTimerModalVisible(false)}
         isVisible={timerModalVisible}
         children={
-          <View
-            style={{
-              backgroundColor: '#bcecff',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 150,
-              borderRadius: 4,
-            }}
-          >
-            <Text style={{ fontSize: 20 }}>Thông báo trước giờ học</Text>
-            <View style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}>
-              <Text>
-                {Math.floor(timer / 3600000)} giờ {Math.floor((timer % 3600000) / 60000)} phút
-              </Text>
-              <MaterialIcons name="edit" size={20} onPress={() => setPickerVisible(true)} />
+          <>
+            <View
+              style={{
+                backgroundColor: '#fff',
+                justifyContent: 'center',
+                height: 100,
+                borderRadius: 4,
+                padding: 10,
+                marginBottom: 10,
+              }}
+            >
+              <View style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+                <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ học</Text>
+                <Switch style={{ flex: 1 }} />
+              </View>
+              <TouchableOpacity
+                style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}
+                onPress={() => setPickerVisible(true)}
+              >
+                <Text style={{ fontSize: 28, color: '#000' }}>
+                  {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
+                  {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
+                    `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
+                  )}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <Button title="Đóng X" onPress={() => setTimerModalVisible(false)} color="#cc0000"></Button>
-          </View>
+
+            <Button
+              title="Đóng X"
+              style={{ bottom: 0, position: 'absolute' }}
+              onPress={() => setTimerModalVisible(false)}
+              color="#cc0000"
+            />
+          </>
         }
       />
       {pickerVisible && (

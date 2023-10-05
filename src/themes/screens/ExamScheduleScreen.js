@@ -1,7 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
-const windowWidth = Dimensions.get('window').width;
-
 const styles = StyleSheet.create({
   modalContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   modalTable: { backgroundColor: '#fff' },

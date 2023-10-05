@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Button, TouchableOpacity,Text } from 'react-native';
+import { View, ScrollView, Button, TouchableOpacity, Text, Switch, Dimensions } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, TableWrapper, Cell, Col, Rows } from 'react-native-table-component';
 import Modal from 'react-native-modal';
@@ -14,9 +14,12 @@ import { NOTIFICATION_TIMER, USER_ROLE } from '../common/constant';
 import userApis from '../apis/User';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
-const widthArr = [132, 88, 72, 56, 40];
-
 const ExamScheduleScreen = () => {
+  const windowWidth = Dimensions.get('window').width;
+  const tableWidth = 388;
+  const widthArr = [132, 88, 72, 56, 40];
+  widthArr.forEach((width, index) => (widthArr[index] = (width * windowWidth) / tableWidth));
+
   const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -86,24 +89,41 @@ const ExamScheduleScreen = () => {
         onBackButtonPress={() => setTimerModalVisible(false)}
         isVisible={timerModalVisible}
         children={
-          <View
-            style={{
-              backgroundColor: '#bcecff',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 150,
-              borderRadius: 4,
-            }}
-          >
-            <Text style={{ fontSize: 20 }}>Thông báo trước giờ thi</Text>
-            <View style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}>
-              <Text>
-                {Math.floor(timer / 3600000)} giờ {Math.floor((timer % 3600000) / 60000)} phút
-              </Text>
-              <MaterialIcons name="edit" size={20} onPress={() => setPickerVisible(true)} />
+          <>
+            <View
+              style={{
+                backgroundColor: '#fff',
+                justifyContent: 'center',
+                height: 100,
+                borderRadius: 4,
+                padding: 10,
+                marginBottom: 10,
+              }}
+            >
+              <View style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+                <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ thi</Text>
+                <Switch style={{ flex: 1 }} />
+              </View>
+              <TouchableOpacity
+                style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}
+                onPress={() => setPickerVisible(true)}
+              >
+                <Text style={{ fontSize: 28, color: '#000' }}>
+                  {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
+                  {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
+                    `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
+                  )}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <Button title="Đóng X" onPress={() => setTimerModalVisible(false)} color="#cc0000"></Button>
-          </View>
+
+            <Button
+              title="Đóng X"
+              style={{ bottom: 0, position: 'absolute' }}
+              onPress={() => setTimerModalVisible(false)}
+              color="#cc0000"
+            />
+          </>
         }
       />
       {pickerVisible && (
