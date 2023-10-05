@@ -15,7 +15,9 @@ const ProfileScreen = () => {
   const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getProfile();
+    setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
   const getProfile = async () => {

@@ -68,7 +68,9 @@ const HomeScreen = () => {
   };
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getData();
+    setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
   return (

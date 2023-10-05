@@ -39,8 +39,10 @@ const StudyScheduleScreen = () => {
   const [pickerVisible, setPickerVisible] = React.useState(false);
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getSemesters();
     getUser();
+    setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
   const getSemesters = async () => {
@@ -70,7 +72,9 @@ const StudyScheduleScreen = () => {
   };
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getSchedule();
+    setContext({ ...context, isLoading: false });
   }, [selectedSemester]);
 
   const getSchedule = async () => {
@@ -113,6 +117,7 @@ const StudyScheduleScreen = () => {
   };
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     if (data !== null && selectedWeek !== null) {
       let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
         (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
@@ -125,6 +130,7 @@ const StudyScheduleScreen = () => {
 
       setSchedule(result);
     }
+    setContext({ ...context, isLoading: false });
   }, [selectedWeek, data]);
 
   const onSemesterOpen = React.useCallback(() => {

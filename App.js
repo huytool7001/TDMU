@@ -66,18 +66,6 @@ function App() {
                   fontWeight: 'bold',
                 },
                 headerTitleAlign: 'center',
-                headerRight: () => (
-                  <Icon
-                    name="alarm"
-                    size={28}
-                    color='#fff'
-                    style={{ marginRight: 10, fontWeight: 'bold' }}
-                    onPress={() => {
-                      setScreen('schedule');
-                      setShowModal(true);
-                    }}
-                  />
-                ),
               }}
             />
             <Drawer.Screen
@@ -108,18 +96,6 @@ function App() {
                   fontWeight: 'bold',
                 },
                 headerTitleAlign: 'center',
-                headerRight: () => (
-                  <Icon
-                    name="alarm"
-                    size={28}
-                    color='#fff'
-                    style={{ marginRight: 10, fontWeight: 'bold' }}
-                    onPress={() => {
-                      setScreen('exam');
-                      setShowModal(true);
-                    }}
-                  />
-                ),
               }}
             />
             {context.role === USER_ROLE.student && (

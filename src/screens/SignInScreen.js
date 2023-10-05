@@ -77,10 +77,12 @@ const SignInScreen = () => {
     try {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
+      setContext({ ...context, isLoading: true });
       const token = await GoogleSignin.getTokens();
       const result = await authAPIs.signIn(token.accessToken);
       setContext({
         ...context,
+        isLoading: false,
         token: result.access_token,
         userId: result.userName,
         role: result.roles,

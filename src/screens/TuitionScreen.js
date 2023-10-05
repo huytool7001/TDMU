@@ -33,7 +33,9 @@ const TuitionScreen = () => {
   const [selectedSubject, setSelectedSubject] = React.useState(null);
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getSemesters();
+    setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
   const getSemesters = async () => {
@@ -44,7 +46,9 @@ const TuitionScreen = () => {
   };
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getTuitions();
+    setContext({ ...context, isLoading: false });
   }, [selectedSemester]);
 
   const getTuitions = async () => {

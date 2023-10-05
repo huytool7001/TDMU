@@ -49,8 +49,10 @@ const ExamScheduleScreen = () => {
   }, [timer]);
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getSemesters();
     getUser();
+    setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
   const getSemesters = async () => {
@@ -62,7 +64,9 @@ const ExamScheduleScreen = () => {
   };
 
   React.useEffect(() => {
+    setContext({ ...context, isLoading: true });
     getSchedule();
+    setContext({ ...context, isLoading: false });
   }, [selectedSemester]);
 
   const getSchedule = async () => {
