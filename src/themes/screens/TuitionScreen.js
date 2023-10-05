@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
   tableTitle: { fontWeight: 'bold', textAlign: 'left', fontSize: 16 },
   titleContainer: {
     backgroundColor: '#d2d2d2',
-    width: '97.5%',
+    // width: '97.5%',
+    width: '100%',
     height: 40,
     marginTop: 20,
     paddingHorizontal: 10,

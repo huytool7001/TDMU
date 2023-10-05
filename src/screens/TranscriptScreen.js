@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, ScrollView } from 'react-native';
+import { View, Text, Button, ScrollView, Dimensions } from 'react-native';
 import { Table, Row, Rows, TableWrapper, Cell } from 'react-native-table-component';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -15,17 +15,23 @@ import { USER_ROLE } from '../common/constant';
 const TranscriptScreen = () => {
   const [context, setContext] = React.useContext(Context);
 
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+  const tableWidth = 384;
+  const widthArr = context.role === USER_ROLE.student ? [200, 48, 48, 48, 40] : [196, 92, 48, 48];
+  widthArr.forEach((width, index) => (widthArr[index] = (width * windowWidth) / tableWidth));
+
   const header =
     context.role === USER_ROLE.student
       ? ['Môn học', 'Số TC', 'TK(10)', 'KQ', '']
       : ['Môn học', 'Nhóm tổ', 'Sỉ số', 'DSSV'];
-  const widthArr = context.role === USER_ROLE.student ? [200, 48, 48, 48, 40] : [196, 92, 48, 48];
 
   const modalHeader =
     context.role === USER_ROLE.student
       ? ['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']
       : ['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'KTDK', 'KTHP'];
   const modalWidthArr = context.role === USER_ROLE.student ? [120, 120, 120] : [120, 120, 60, 100, 48, 48];
+  modalWidthArr.forEach((width, index) => (modalWidthArr[index] = (width * windowWidth) / tableWidth));
 
   const isFocus = useIsFocused();
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -89,11 +95,8 @@ const TranscriptScreen = () => {
         isVisible={modalVisible}
         children={
           <>
-            <ScrollView
-              horizontal={true}
-              style={context.role === USER_ROLE.student ? { flexGrow: 0.115 } : { flexGrow: 1 }}
-            >
-              <View style={styles.modalContainer}>
+            <ScrollView horizontal={true} contentContainerStyle={styles.modalContainer}>
+              <View style={{ padding: 10, height: context.role === USER_ROLE.student ? 62 : windowHeight - 50 }}>
                 <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
                   <Row
                     data={modalHeader}

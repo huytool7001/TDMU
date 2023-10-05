@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
-  modalContainer: { alignItems: 'center', justifyContent: 'center', padding: 10 },
+  modalContainer: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   modalTable: { backgroundColor: '#fff' },
   contentContainer: { top: 100, marginBottom: 100 },
   tableHeader: { fontWeight: 'bold', textAlign: 'center' },

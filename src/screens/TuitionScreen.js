@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button, Text } from 'react-native';
+import { View, Button, Text, Dimensions } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, TableWrapper, Cell, Col } from 'react-native-table-component';
 import Modal from 'react-native-modal';
@@ -12,13 +12,22 @@ import tuitionAPIs from '../apis/Tuition';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
 
-const allSemesterWidthArr = [136, 102, 102, 40];
-const selectedSemesterWidthArr = [136, 36, 84, 84, 40];
-const ds_da_thu_width_arr = [176, 102, 102];
-
 const TuitionScreen = () => {
-  const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
+
+  const windowWidth = Dimensions.get('window').width;
+  const tableWidth = 380;
+
+  const allSemesterWidthArr = [136, 102, 102, 40]; // 380
+  allSemesterWidthArr.forEach((width, index) => (allSemesterWidthArr[index] = (width * windowWidth) / tableWidth));
+
+  const selectedSemesterWidthArr = [136, 36, 84, 84, 40];
+  selectedSemesterWidthArr.forEach((width, index) => (selectedSemesterWidthArr[index] = (width * windowWidth) / tableWidth));
+
+  const ds_da_thu_width_arr = [176, 102, 102];
+  ds_da_thu_width_arr.forEach((width, index) => (ds_da_thu_width_arr[index] = (width * windowWidth) / tableWidth));
+
+  const isFocus = useIsFocused();
   const [tuitions, setTuitions] = React.useState(null);
 
   //semester
