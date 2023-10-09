@@ -100,15 +100,12 @@ const ExamScheduleScreen = () => {
                 marginBottom: 10,
               }}
             >
-              <View style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ thi</Text>
-                <Switch style={{ flex: 1 }} />
+                {/* <Switch style={{ flex: 1 }} /> */}
               </View>
-              <TouchableOpacity
-                style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}
-                onPress={() => setPickerVisible(true)}
-              >
-                <Text style={{ fontSize: 28, color: '#000' }}>
+              <TouchableOpacity style={{ margin: 10 }} onPress={() => setPickerVisible(true)}>
+                <Text style={{ fontSize: 32, color: '#000', textAlign: 'right' }}>
                   {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
                   {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
                     `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,

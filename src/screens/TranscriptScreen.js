@@ -95,8 +95,15 @@ const TranscriptScreen = () => {
         isVisible={modalVisible}
         children={
           <>
-            <ScrollView horizontal={true} contentContainerStyle={styles.modalContainer}>
-              <View style={{ padding: 10, height: context.role === USER_ROLE.student ? 62 : windowHeight - 50 }}>
+            <ScrollView horizontal={true} style={{ flex: 1 }} contentContainerStyle={styles.modalContainer}>
+              <View
+                style={{
+                  padding: 10,
+                  height: context.role === USER_ROLE.student ? 62 : windowHeight,
+                  paddingTop: context.role === USER_ROLE.student ? 0 : 40,
+                  paddingBottom: context.role === USER_ROLE.student ? 0 : 60,
+                }}
+              >
                 <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
                   <Row
                     data={modalHeader}

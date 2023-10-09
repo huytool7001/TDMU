@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Button, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, FlatList, Button, ScrollView, TouchableOpacity, Switch, TextInput, Alert } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -15,6 +15,7 @@ import userApis from '../apis/User';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const StudyScheduleScreen = () => {
+  const colors = ['#ff0000', '#ff6f00', '#f6ff00', '#00ff04', '#0084ff', '#aa00ff', '#ff0073'];
   const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [data, setData] = React.useState(null);
@@ -29,14 +30,26 @@ const StudyScheduleScreen = () => {
   const [weekOpen, setWeekOpen] = React.useState(false);
   const [selectedWeek, setSelectedWeek] = React.useState(null);
 
-  //students
+  //modal
+  const [modal, setModal] = React.useState('');
   const [modalVisible, setModalVisible] = React.useState(false);
+
+  //students
   const [students, setStudents] = React.useState([]);
 
   //timer
   const [timer, setTimer] = React.useState(NOTIFICATION_TIMER.SCHEDULE);
-  const [timerModalVisible, setTimerModalVisible] = React.useState(false);
   const [pickerVisible, setPickerVisible] = React.useState(false);
+
+  //note
+  const [note, setNote] = React.useState({
+    content: '',
+    color: 0,
+    timer: NOTIFICATION_TIMER.SCHEDULE,
+    notified: false,
+    showPicker: false,
+    scheduleId: '',
+  });
 
   React.useEffect(() => {
     setContext({ ...context, isLoading: true });
@@ -113,6 +126,7 @@ const StudyScheduleScreen = () => {
       setStudents([]);
     }
 
+    setModal('students');
     setModalVisible(true);
   };
 
@@ -155,49 +169,46 @@ const StudyScheduleScreen = () => {
     });
   }, [timer]);
 
+  const handleSavingNote = async () => {
+    if (note.content) {
+      setContext({ ...context, isLoading: true });
+      await studyScheduleAPIs.updateNote({
+        ...note,
+        userId: context.userId,
+        note: note.content,
+        color: colors[note.color],
+      });
+
+      const curWeek = selectedWeek;
+      await getSchedule();
+      setSelectedWeek(curWeek);
+      setContext({ ...context, isLoading: false });
+    }
+    setModalVisible(false);
+  };
+
+  const handleDeletingNote = async () => {
+    Alert.alert('Lưu ý', 'Bạn có chắc muốn xóa ghi chú này?!', [
+      {
+        text: 'Hủy',
+      },
+      {
+        text: 'Có',
+        onPress: async () => {
+          setContext({ ...context, isLoading: true });
+          await studyScheduleAPIs.deleteNote(context.userId, note.scheduleId);
+          const curWeek = selectedWeek;
+          await getSchedule();
+          setSelectedWeek(curWeek);
+          setModalVisible(false);
+          setContext({ ...context, isLoading: false });
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <Modal
-        onBackButtonPress={() => setTimerModalVisible(false)}
-        isVisible={timerModalVisible}
-        children={
-          <>
-            <View
-              style={{
-                backgroundColor: '#fff',
-                justifyContent: 'center',
-                height: 100,
-                borderRadius: 4,
-                padding: 10,
-                marginBottom: 10,
-              }}
-            >
-              <View style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-                <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ học</Text>
-                <Switch style={{ flex: 1 }} />
-              </View>
-              <TouchableOpacity
-                style={{ display: 'flex', flexDirection: 'row', marginVertical: 10 }}
-                onPress={() => setPickerVisible(true)}
-              >
-                <Text style={{ fontSize: 28, color: '#000' }}>
-                  {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
-                  {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
-                    `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
-                  )}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <Button
-              title="Đóng X"
-              style={{ bottom: 0, position: 'absolute' }}
-              onPress={() => setTimerModalVisible(false)}
-              color="#cc0000"
-            />
-          </>
-        }
-      />
       {pickerVisible && (
         <RNDateTimePicker
           mode="time"
@@ -213,44 +224,179 @@ const StudyScheduleScreen = () => {
         />
       )}
 
+      {note.showPicker && (
+        <RNDateTimePicker
+          mode="time"
+          is24Hour={true}
+          value={new Date(1970, 0, 1, note.timer / 3600000, (note.timer % 3600000) / 60000, 0)}
+          minuteInterval={5}
+          onChange={(e, date) => {
+            if (e.type === 'set') {
+              setNote({ ...note, timer: date.getHours() * 3600000 + date.getMinutes() * 60000, showPicker: false });
+            } else {
+              setNote({ ...note, showPicker: false });
+            }
+          }}
+        />
+      )}
+
       <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          <>
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContainer} horizontal={true}>
-              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                <Row
-                  data={['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'Điện thoại', 'Email']}
-                  textStyle={styles.tableHeader}
-                  style={{ backgroundColor: '#2596be' }}
-                  widthArr={[120, 120, 60, 100, 100, 200]}
+          modal === 'students' ? (
+            <>
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContainer} horizontal={true}>
+                <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                  <Row
+                    data={['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'Điện thoại', 'Email']}
+                    textStyle={styles.tableHeader}
+                    style={{ backgroundColor: '#2596be' }}
+                    widthArr={[120, 120, 60, 100, 100, 200]}
+                  />
+                  {students.length !== null ? (
+                    <ScrollView>
+                      <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                        <Rows
+                          data={students.map((rowData) => [
+                            rowData.ma_sinh_vien,
+                            rowData.ho_lot,
+                            rowData.ten,
+                            rowData.ma_lop,
+                            rowData.dien_thoai,
+                            rowData.e_mail,
+                          ])}
+                          textStyle={{ textAlign: 'center' }}
+                          widthArr={[120, 120, 60, 100, 100, 200]}
+                        />
+                      </Table>
+                    </ScrollView>
+                  ) : (
+                    <Row data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} />
+                  )}
+                </Table>
+              </ScrollView>
+              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
+            </>
+          ) : modal === 'timer' ? (
+            <View style={{ padding: 10 }}>
+              <View
+                style={{
+                  backgroundColor: '#fff',
+                  justifyContent: 'center',
+                  height: 100,
+                  borderRadius: 4,
+                  padding: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ học</Text>
+                  {/* <Switch style={{ flex: 1 }} /> */}
+                </View>
+                <TouchableOpacity style={{ margin: 10 }} onPress={() => setPickerVisible(true)}>
+                  <Text style={{ fontSize: 32, color: '#000', textAlign: 'right' }}>
+                    {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
+                    {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
+                      `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
+                    )}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <Button
+                title="Đóng X"
+                style={{ bottom: 0, position: 'absolute' }}
+                onPress={() => setModalVisible(false)}
+                color="#cc0000"
+              />
+            </View>
+          ) : modal === 'note' ? (
+            <View style={{ padding: 10 }}>
+              <View
+                style={{
+                  backgroundColor: '#fff',
+                  justifyContent: 'center',
+                  borderRadius: 4,
+                  padding: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={{ fontSize: 28, color: '#000', marginBottom: 10, borderBottomWidth: 1 }}>Ghi chú</Text>
+                <TextInput
+                  multiline
+                  value={note.content}
+                  onChangeText={(text) => setNote({ ...note, content: text })}
+                  style={{ borderRadius: 4, borderWidth: 1, maxHeight: 100, marginVertical: 10 }}
                 />
-                {students.length !== null ? (
-                  <ScrollView>
-                    <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                      <Rows
-                        data={students.map((rowData) => [
-                          rowData.ma_sinh_vien,
-                          rowData.ho_lot,
-                          rowData.ten,
-                          rowData.ma_lop,
-                          rowData.dien_thoai,
-                          rowData.e_mail,
-                        ])}
-                        textStyle={{ textAlign: 'center' }}
-                        widthArr={[120, 120, 60, 100, 100, 200]}
-                      />
-                    </Table>
-                  </ScrollView>
-                ) : (
-                  <Row data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} />
-                )}
-              </Table>
-            </ScrollView>
-            <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-          </>
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                  <Text style={{ flex: 1 }}>Màu</Text>
+                  {colors.map((color, index) => (
+                    <TouchableOpacity
+                      onPress={() => setNote({ ...note, color: index })}
+                      style={{ backgroundColor: color, flex: 1, height: 30, borderWidth: index === note.color ? 1 : 0 }}
+                    ></TouchableOpacity>
+                  ))}
+                </View>
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                  <Text style={{ flex: 1 }}>Thông báo</Text>
+                  <Text
+                    style={{ fontSize: 28, color: note.notified ? '#000' : '#9d9d9d', flex: 1 }}
+                    onPress={() => {
+                      if (note.notified) setNote({ ...note, showPicker: true });
+                    }}
+                  >
+                    {`00${Math.floor(note.timer / 3600000)}`.substring(
+                      `00${Math.floor(note.timer / 3600000)}`.length - 2,
+                    )}
+                    :
+                    {`00${Math.floor((note.timer % 3600000) / 60000)}`.substring(
+                      `00${Math.floor((note.timer % 3600000) / 60000)}`.length - 2,
+                    )}
+                  </Text>
+                  <Switch
+                    style={{ flex: 1 }}
+                    value={note.notified}
+                    onValueChange={(value) => setNote({ ...note, notified: value })}
+                  />
+                </View>
+              </View>
+
+              <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#30cc00',
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 4,
+                    marginRight: 2,
+                  }}
+                  onPress={handleSavingNote}
+                >
+                  <Text style={{ color: '#fff' }}>Lưu</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#cc0000',
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 4,
+                    marginLeft: 2,
+                  }}
+                  onPress={handleDeletingNote}
+                >
+                  <Text style={{ color: '#fff' }}>Xóa</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <></>
+          )
         }
       ></Modal>
       <View style={dropdownStyles.container}>
@@ -289,7 +435,7 @@ const StudyScheduleScreen = () => {
         renderItem={({ item }) => (
           <View style={{ padding: 10 }}>
             <Text style={styles.textDate}>
-              {new Date(item.day).toLocaleDateString('en-US', {
+              {new Date(item.day).toLocaleDateString('vi-VN', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -343,6 +489,27 @@ const StudyScheduleScreen = () => {
                       Danh Sách Sinh Viên
                     </Text>
                   )}
+                  <Text
+                    onPress={() => {
+                      setModal('note');
+                      setModalVisible(true);
+                      setNote({
+                        ...note,
+                        scheduleId: `${rowData.ngay_hoc}_${rowData.tiet_bat_dau}`,
+                        content: rowData.note?.note || '',
+                        color: colors.find((color) => color === rowData.note?.color)
+                          ? colors.findIndex((color) => color === rowData.note?.color)
+                          : 0,
+                        notified: rowData.note?.notified || false,
+                        timer: rowData.note?.timer || NOTIFICATION_TIMER.SCHEDULE,
+                      });
+                    }}
+                    style={rowData.note?.color ? { color: rowData.note.color } : null}
+                  >
+                    <MaterialIcons name="speaker-notes" color="#2596be" />
+                    {'\t'}
+                    {rowData.note ? rowData.note.note : 'Ghi chú'}
+                  </Text>
                 </View>
               )}
             />
@@ -364,7 +531,10 @@ const StudyScheduleScreen = () => {
           backgroundColor: '#2596be',
           borderRadius: 100,
         }}
-        onPress={() => setTimerModalVisible(true)}
+        onPress={() => {
+          setModal('timer');
+          setModalVisible(true);
+        }}
       >
         <MaterialIcons name="access-alarm" size={30} color="#fff" />
       </TouchableOpacity>
