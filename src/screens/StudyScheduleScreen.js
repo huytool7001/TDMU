@@ -49,6 +49,8 @@ const StudyScheduleScreen = () => {
     notified: false,
     showPicker: false,
     scheduleId: '',
+    date: new Date(),
+    startTime: '',
   });
 
   React.useEffect(() => {
@@ -212,13 +214,15 @@ const StudyScheduleScreen = () => {
       {pickerVisible && (
         <RNDateTimePicker
           mode="time"
+          timeZoneName="Asia/Ho_Chi_Minh"
           is24Hour={true}
-          value={new Date(1970, 0, 1, timer / 3600000, (timer % 3600000) / 60000, 0)}
+          value={new Date(1970, 0, 1, Number.parseInt(timer / 3600000) - 1, (timer % 3600000) / 60000, 0)}
           minuteInterval={5}
           onChange={(e, date) => {
+            const diff = 1;
             setPickerVisible(false);
             if (e.type === 'set') {
-              setTimer(date.getHours() * 3600000 + date.getMinutes() * 60000);
+              setTimer(((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000);
             }
           }}
         />
@@ -227,12 +231,18 @@ const StudyScheduleScreen = () => {
       {note.showPicker && (
         <RNDateTimePicker
           mode="time"
+          timeZoneName="Asia/Ho_Chi_Minh"
           is24Hour={true}
-          value={new Date(1970, 0, 1, note.timer / 3600000, (note.timer % 3600000) / 60000, 0)}
+          value={new Date(1970, 0, 1, Number.parseInt(note.timer / 3600000) - 1, (note.timer % 3600000) / 60000, 0)}
           minuteInterval={5}
           onChange={(e, date) => {
             if (e.type === 'set') {
-              setNote({ ...note, timer: date.getHours() * 3600000 + date.getMinutes() * 60000, showPicker: false });
+              const diff = 1;
+              setNote({
+                ...note,
+                timer: ((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000,
+                showPicker: false,
+              });
             } else {
               setNote({ ...note, showPicker: false });
             }
@@ -334,6 +344,7 @@ const StudyScheduleScreen = () => {
                   <Text style={{ flex: 1 }}>Màu</Text>
                   {colors.map((color, index) => (
                     <TouchableOpacity
+                      key={index}
                       onPress={() => setNote({ ...note, color: index })}
                       style={{ backgroundColor: color, flex: 1, height: 30, borderWidth: index === note.color ? 1 : 0 }}
                     ></TouchableOpacity>
@@ -502,6 +513,9 @@ const StudyScheduleScreen = () => {
                           : 0,
                         notified: rowData.note?.notified || false,
                         timer: rowData.note?.timer || NOTIFICATION_TIMER.SCHEDULE,
+                        date: item.ngay_hoc || new Date(),
+                        startTime:
+                          data.ds_tiet_trong_ngay.find((tiet) => tiet.tiet === rowData.tiet_bat_dau).gio_bat_dau || '',
                       });
                     }}
                     style={rowData.note?.color ? { color: rowData.note.color } : null}

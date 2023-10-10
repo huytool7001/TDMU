@@ -78,7 +78,7 @@ const ExamScheduleScreen = () => {
       if (context.role === USER_ROLE.student) {
         setSchedule(result.data.ds_lich_thi);
       } else {
-        setSchedule(result.lich_coi_thi_can_bo.data.ds_lich_thi);
+        setSchedule(result.lich_coi_thi_can_bo.data?.ds_lich_thi);
       }
     }
   };
@@ -126,13 +126,15 @@ const ExamScheduleScreen = () => {
       {pickerVisible && (
         <RNDateTimePicker
           mode="time"
+          timeZoneName="Asia/Ho_Chi_Minh"
           is24Hour={true}
-          value={new Date(1970, 0, 1, timer / 3600000, (timer % 3600000) / 60000, 0)}
+          value={new Date(1970, 0, 1, Number.parseInt(timer / 3600000) - 1, (timer % 3600000) / 60000, 0)}
           minuteInterval={5}
           onChange={(e, date) => {
+            const diff = 1;
             setPickerVisible(false);
             if (e.type === 'set') {
-              setTimer(date.getHours() * 3600000 + date.getMinutes() * 60000);
+              setTimer(((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000);
             }
           }}
         />
