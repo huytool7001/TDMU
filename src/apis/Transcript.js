@@ -105,6 +105,49 @@ class TranscriptAPIs {
       .then((response) => response.json())
       .catch((err) => console.log(err));
   };
+
+  getTeachingSubjects = async (token) => {
+    const semester = await fetch(`${url}/srm/w-dshockynhapdiem`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        filter: {
+          hoc_ky: '',
+          is_tieng_anh: null,
+        },
+        additional: {
+          paging: {
+            limit: 100,
+            page: 1,
+          },
+          ordering: [
+            {
+              name: null,
+              order_type: 1,
+            },
+          ],
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((response) => response.data.ds_hoc_ky[0].hoc_ky)
+      .catch((err) => {
+        console.log(err);
+        return null;
+      });
+
+    return fetch(`${url}/srm/w-locdsnhomhocnhapdiem?nhhk=${semester}`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .catch((err) => console.log(err));
+  };
 }
 
 const transcriptAPIs = new TranscriptAPIs();

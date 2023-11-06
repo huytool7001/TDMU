@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions, Alert } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 import * as Animatable from 'react-native-animatable';
@@ -9,6 +9,7 @@ import articleAPIs from '../apis/Article';
 import announcementApis from '../apis/Announcement';
 import { useIsFocused } from '@react-navigation/native';
 import { Context } from '../utils/context';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const HomeScreen = () => {
   const isFocus = useIsFocused();
@@ -46,6 +47,7 @@ const HomeScreen = () => {
           tieu_de: announcement.title,
           ngay_dang_tin: announcement.createdAt,
           noi_dung: announcement.body,
+          files: announcement.files,
         })),
       );
     }
@@ -73,6 +75,24 @@ const HomeScreen = () => {
     setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
+  const handleOpeningFile = async (file) => {
+    const rootDir = RNFetchBlob.fs.dirs.DownloadDir;
+    const options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        path: rootDir + '/' + file.name,
+        description: 'downloading file...',
+        notification: true,
+        // useDownloadManager works with Android only
+        useDownloadManager: true,
+      },
+    };
+
+    await RNFetchBlob.config(options).fetch('GET', file.path);
+
+    return Alert.alert('Downloading file...', '1 tệp đang được tải xuống', [], { cancelable: true });
+  };
+
   return (
     <ScrollView
       style={{
@@ -80,10 +100,22 @@ const HomeScreen = () => {
       }}
     >
       <Modal
+        children={
+          <View>
+            <Text></Text>
+          </View>
+        }
+      />
+      <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
-        onModalHide={() => setData({ ...data, key: '', index: null, data: null })}
+        onModalHide={() => {
+          if (selected.key === 'announcement') {
+            announcementApis.reply(selected.data.id, { studentId: context.userId });
+          }
+          setSelected({ ...selected, key: '', index: null, data: null });
+        }}
         children={
           selected.data ? (
             <Animatable.View style={styles.modalContainer} animation="slideInUp">
@@ -96,6 +128,25 @@ const HomeScreen = () => {
                   contentWidth={width}
                   source={{ html: selected.key === 'tb' ? selected.data.tom_tat : selected.data.noi_dung }}
                 />
+                {selected.data.files?.length && (
+                  <View style={{ borderTopWidth: 0.5 }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tệp đính kèm</Text>
+                    {selected.data.files.map((file, index) => (
+                      <View key={index} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <AntDesign name="link" />
+                        <Text
+                          key={index}
+                          numberOfLines={1}
+                          ellipsizeMode="middle"
+                          style={{ marginLeft: 10, width: '90%' }}
+                          onPress={() => handleOpeningFile(file)}
+                        >
+                          {file.name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </ScrollView>
             </Animatable.View>
           ) : (

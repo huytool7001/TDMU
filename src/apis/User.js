@@ -29,6 +29,16 @@ class UserApis {
       .then((res) => res.json())
       .catch((err) => console.log(err));
   };
+
+  searchByEmails = async (emails) => {
+    return fetch(`${SERVER_API_URL}/firebase/users?emails=${emails}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  };
 }
 
 const userApis = new UserApis();

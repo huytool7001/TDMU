@@ -17,6 +17,7 @@ import ReLoginAlert from './src/components/ReLoginAlert';
 import TuitionScreen from './src/screens/TuitionScreen';
 import { USER_ROLE } from './src/common/constant';
 import BottomTabNavigator from './src/components/BottomTab';
+import { MenuProvider } from 'react-native-popup-menu';
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,9 @@ function App() {
     token: '',
     role: '',
     userId: '',
+    username: '',
+    email: '',
+    avatar: '',
     isLoading: false,
     expire: false,
     timer: null,
@@ -43,67 +47,22 @@ function App() {
 
   return (
     <Context.Provider value={[context, setContext]}>
-      <StatusBar backgroundColor="#2596be" />
-      <Spinner visible={context.isLoading} />
-      {context.expire && <ReLoginAlert />}
-      <NavigationContainer>
-        {context.token ? (
-          <Drawer.Navigator
-            drawerContent={(props) => <DrawerContent {...props} />}
-            screenOptions={{ drawerStyle: { width: 312 } }}
-          >
-            <Drawer.Screen name="HomeBottomTab" component={BottomTabNavigator} options={{ headerShown: false }} />
-            <Drawer.Screen
-              name="StudySchedule"
-              component={StudyScheduleScreen}
-              options={{
-                title: 'Thời khóa biểu',
-                headerStyle: {
-                  backgroundColor: '#2596be',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerTitleAlign: 'center',
-              }}
-            />
-            <Drawer.Screen
-              name="Transcript"
-              component={TranscriptScreen}
-              options={{
-                title: 'Điểm',
-                headerStyle: {
-                  backgroundColor: '#2596be',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerTitleAlign: 'center',
-              }}
-            />
-            <Drawer.Screen
-              name="ExamSchedule"
-              component={ExamScheduleScreen}
-              options={{
-                title: 'Lịch thi',
-                headerStyle: {
-                  backgroundColor: '#2596be',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerTitleAlign: 'center',
-              }}
-            />
-            {context.role === USER_ROLE.student && (
+      <MenuProvider>
+        <StatusBar backgroundColor="#2596be" />
+        <Spinner visible={context.isLoading} />
+        {context.expire && <ReLoginAlert />}
+        <NavigationContainer>
+          {context.token ? (
+            <Drawer.Navigator
+              drawerContent={(props) => <DrawerContent {...props} />}
+              screenOptions={{ drawerStyle: { width: 312 } }}
+            >
+              <Drawer.Screen name="HomeBottomTab" component={BottomTabNavigator} options={{ headerShown: false }} />
               <Drawer.Screen
-                name="Tuition"
-                component={TuitionScreen}
+                name="StudySchedule"
+                component={StudyScheduleScreen}
                 options={{
-                  title: 'Học phí',
+                  title: 'Thời khóa biểu',
                   headerStyle: {
                     backgroundColor: '#2596be',
                   },
@@ -114,27 +73,74 @@ function App() {
                   headerTitleAlign: 'center',
                 }}
               />
-            )}
-            <Drawer.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                title: 'Hồ sơ',
-                headerStyle: {
-                  backgroundColor: '#2596be',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-                headerTitleAlign: 'center',
-              }}
-            />
-          </Drawer.Navigator>
-        ) : (
-          <RootStackScreen />
-        )}
-      </NavigationContainer>
+              <Drawer.Screen
+                name="Transcript"
+                component={TranscriptScreen}
+                options={{
+                  title: 'Điểm',
+                  headerStyle: {
+                    backgroundColor: '#2596be',
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerTitleAlign: 'center',
+                }}
+              />
+              <Drawer.Screen
+                name="ExamSchedule"
+                component={ExamScheduleScreen}
+                options={{
+                  title: 'Lịch thi',
+                  headerStyle: {
+                    backgroundColor: '#2596be',
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerTitleAlign: 'center',
+                }}
+              />
+              {context.role === USER_ROLE.student && (
+                <Drawer.Screen
+                  name="Tuition"
+                  component={TuitionScreen}
+                  options={{
+                    title: 'Học phí',
+                    headerStyle: {
+                      backgroundColor: '#2596be',
+                    },
+                    headerTintColor: '#fff',
+                    headerTitleStyle: {
+                      fontWeight: 'bold',
+                    },
+                    headerTitleAlign: 'center',
+                  }}
+                />
+              )}
+              <Drawer.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                  title: 'Hồ sơ',
+                  headerStyle: {
+                    backgroundColor: '#2596be',
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerTitleAlign: 'center',
+                }}
+              />
+            </Drawer.Navigator>
+          ) : (
+            <RootStackScreen />
+          )}
+        </NavigationContainer>
+      </MenuProvider>
     </Context.Provider>
   );
 }

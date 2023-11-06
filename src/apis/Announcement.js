@@ -24,6 +24,18 @@ class AnnouncementApis {
       .then((res) => res.json())
       .catch((err) => console.log(err));
   };
+
+  reply = async (id, data) => {
+    return fetch(`${url}/${id}/replies`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  };
 }
 
 const announcementApis = new AnnouncementApis();

@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Alert } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import StudyScheduleScreen from '../screens/StudyScheduleScreen';
-import TranscriptScreen from '../screens/TranscriptScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
 import ProfileScreen from '../screens/ProfileScreen';
+import ChatScreen from '../screens/ChatScreen';
+import GroupChatScreen from '../screens/GroupChatScreen';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import GroupMembersScreen from '../screens/GroupMembersScreen';
+import { Context } from '../utils/context';
+import firestore from '@react-native-firebase/firestore';
+import { USER_ROLE } from '../common/constant';
+import AddMembersScreen from '../screens/AddMembersScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -16,11 +24,7 @@ const BottomTabNavigator = () => {
   theme.colors.secondaryContainer = 'transparent';
 
   return (
-    <Tab.Navigator
-      activeColor="#fff"
-      barStyle={{ backgroundColor: '#2596be' }}
-      shifting={true}
-    >
+    <Tab.Navigator activeColor="#fff" barStyle={{ backgroundColor: '#2596be' }} shifting={true}>
       <Tab.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -38,11 +42,11 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="TranscriptStack"
-        component={TranscriptStackScreen}
+        name="ChatStack"
+        component={ChatStackScreen}
         options={{
-          tabBarLabel: 'Điểm',
-          tabBarIcon: ({ color }) => <Icon name="numeric-9-plus-box-multiple" size={26} color={color} />,
+          tabBarLabel: 'Chat',
+          tabBarIcon: ({ color }) => <Icon name="chat" size={26} color={color} />,
         }}
       />
       <Tab.Screen
@@ -162,9 +166,12 @@ const ProfileStackScreen = ({ navigation }) => {
   );
 };
 
-const TranscriptStackScreen = ({ navigation }) => {
+const ChatStackScreen = ({ navigation }) => {
+  const [context, setContext] = useContext(Context);
+
   return (
     <Stack.Navigator
+      initialRouteName="GroupChat"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#2596be',
@@ -176,10 +183,10 @@ const TranscriptStackScreen = ({ navigation }) => {
       }}
     >
       <Stack.Screen
-        name="Transcript"
-        component={TranscriptScreen}
+        name="GroupChat"
+        component={GroupChatScreen}
         options={{
-          title: 'Điểm',
+          title: 'Nhóm',
           headerTitleAlign: 'center',
           headerLeft: () => (
             <Icon
@@ -192,6 +199,115 @@ const TranscriptStackScreen = ({ navigation }) => {
             ></Icon>
           ),
         }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={({ route }) => ({
+          headerTitleAlign: 'center',
+          title: route.params.channel.name,
+          headerTitleContainerStyle: { width: '70%' },
+          headerLeft: () => (
+            <Icon
+              name="chevron-left"
+              size={25}
+              backgroundColor="#2596be"
+              color="#fff"
+              style={{ marginLeft: 13 }}
+              onPress={() => navigation.navigate('GroupChat')}
+            ></Icon>
+          ),
+          headerRight: () => (
+            <Menu>
+              <MenuTrigger
+                children={
+                  <Icon
+                    name="dots-vertical"
+                    size={25}
+                    backgroundColor="#2596be"
+                    color="#fff"
+                    style={{ marginRight: 13 }}
+                  ></Icon>
+                }
+              />
+              <MenuOptions
+                customStyles={{
+                  optionsContainer: { width: 150, marginTop: 30, marginLeft: -10 },
+                  optionWrapper: { margin: 5 },
+                  optionText: { color: '#000' },
+                }}
+              >
+                <MenuOption
+                  text="Xem thành viên"
+                  onSelect={() => {
+                    navigation.navigate('GroupMembers', { channel: route.params.channel });
+                  }}
+                />
+                {context.role === USER_ROLE.teacher && (
+                  <>
+                    <MenuOption
+                      text="Thêm thành viên"
+                      onSelect={() => navigation.navigate('AddMember', { channel: route.params.channel })}
+                    />
+                    <MenuOption
+                      text="Xóa nhóm"
+                      onSelect={() =>
+                        Alert.alert('Lưu ý', 'Mọi dữ liệu của nhóm này sẽ bị xóa vĩnh viễn', [
+                          { text: 'Hủy', style: 'cancel' },
+                          {
+                            text: 'Xóa',
+                            onPress: async () => {
+                              await firestore().collection('GROUPS').doc(route.params.channel.id).delete();
+                              navigation.navigate('GroupChat');
+                            },
+                          },
+                        ])
+                      }
+                    />
+                  </>
+                )}
+              </MenuOptions>
+            </Menu>
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="GroupMembers"
+        component={GroupMembersScreen}
+        options={({ route }) => ({
+          headerTitleAlign: 'center',
+          title: route.params.channel.name,
+          headerTitleContainerStyle: { width: '70%' },
+          headerLeft: () => (
+            <Icon
+              name="chevron-left"
+              size={25}
+              backgroundColor="#2596be"
+              color="#fff"
+              style={{ marginLeft: 13 }}
+              onPress={() => navigation.navigate('Chat', { channel: route.params.channel })}
+            ></Icon>
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="AddMember"
+        component={AddMembersScreen}
+        options={({ route }) => ({
+          headerTitleAlign: 'center',
+          title: route.params.channel.name,
+          headerTitleContainerStyle: { width: '70%' },
+          headerLeft: () => (
+            <Icon
+              name="chevron-left"
+              size={25}
+              backgroundColor="#2596be"
+              color="#fff"
+              style={{ marginLeft: 13 }}
+              onPress={() => navigation.navigate('Chat', { channel: route.params.channel })}
+            ></Icon>
+          ),
+        })}
       />
     </Stack.Navigator>
   );

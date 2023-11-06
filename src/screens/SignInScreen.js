@@ -9,6 +9,8 @@ import { useTheme } from 'react-native-paper';
 import authAPIs from '../apis/Auth';
 import { Context } from '../utils/context';
 import styles from '../themes/screens/SignInScreen';
+import auth from '@react-native-firebase/auth';
+import userApis from '../apis/User';
 
 GoogleSignin.configure({
   webClientId: '869859501130-uouaup2hk7mb26beso4o5jk7ql7objcn.apps.googleusercontent.com',
@@ -56,22 +58,7 @@ const SignInScreen = () => {
     });
   };
 
-  const handleSignIn = async () => {
-    // setContext({ ...context, token: 'tdmu' });
-    // setContext({ ...context, isLoading: true });
-    // const result = await userAPIs.signIn({
-    //   userId: data.username,
-    //   password: data.password,
-    // });
-    // setContext({ ...context, isLoading: false });
-    // if (result.err) {
-    //   Alert.alert('Oops!', result.err, [{ text: 'Ok' }]);
-    //   return;
-    // }
-    // if (result.token) {
-    //   setContext({ ...context, token: result.token });
-    // }
-  };
+  const handleSignIn = async () => {};
 
   const handleSignInWithGoogle = async () => {
     try {
@@ -79,12 +66,19 @@ const SignInScreen = () => {
       await GoogleSignin.signIn();
       setContext({ ...context, isLoading: true });
       const token = await GoogleSignin.getTokens();
+      const googleCredential = auth.GoogleAuthProvider.credential(token.idToken);
+      await auth().signInWithCredential(googleCredential);
       const result = await authAPIs.signIn(token.accessToken);
+      const user = await userApis.searchByEmails(result.principal).then((res) => res.users[0]);
+
       setContext({
         ...context,
         isLoading: false,
         token: result.access_token,
         userId: result.userName,
+        username: result.name,
+        email: result.principal,
+        avatar: user.photoURL,
         role: result.roles,
         timer: setTimeout(() => {
           setContext({ ...context, expire: true });
@@ -93,6 +87,7 @@ const SignInScreen = () => {
     } catch (error) {
       console.log(error);
       Alert.alert('Error', error.message);
+      setContext({ ...context, isLoading: false });
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
       } else if (error.code === statusCodes.IN_PROGRESS) {
