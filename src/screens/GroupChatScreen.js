@@ -78,11 +78,18 @@ export default function GroupChatScreen({ navigation }) {
     if (selectedSubject !== null) {
       setRefresh(false);
       setContext({ ...context, isLoading: true });
+
+      const res = await transcriptAPIs.getStudents(context.token, selectedSubject.id_nhom_hoc);
+      let members = [context.email];
+      if (res.code === 200) {
+        members = [...members, ...res.data.ds_sinh_vien.map((student) => `${student.ma_sv}@student.tdmu.edu.vn`)];
+      }
+
       await firestore()
         .collection('GROUPS')
         .add({
           name: `${selectedSubject.nhom_hoc} - ${selectedSubject.ten_mon_hoc}`,
-          members: [context.email],
+          members,
           latestMessage: {
             text: `Chào mừng bạn đến với ${selectedSubject.nhom_hoc} - ${selectedSubject.ten_mon_hoc}.`,
             createdAt: new Date().getTime(),
