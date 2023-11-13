@@ -9,6 +9,7 @@ import DocumentPicker from 'react-native-document-picker';
 import InChatFileTransfer from '../components/InChatFileTransfer';
 import storage from '@react-native-firebase/storage';
 import RNFetchBlob from 'rn-fetch-blob';
+import notificationApis from '../apis/Notification';
 
 const width = Dimensions.get('screen').width * 0.94;
 
@@ -16,62 +17,32 @@ export default function ChatScreen({ route }) {
   const [context, setContext] = useContext(Context);
   const { channel } = route.params;
 
+  const [textInput, setTextInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  async function handleSend(messages) {
-    const text = messages[0]?.text || '';
+  async function handleSend(text) {
+    if (files.length) {
+      setLoading(true);
+      files.forEach(async (file, index) => {
+        const ref = storage().ref(`${Date.now() + '_' + file.name}`);
+        await ref.putFile(file.fileCopyUri);
+        const path = await ref.getDownloadURL();
+        file.path = path;
 
-    if (text || files.length) {
-      if (files.length) {
-        files.forEach(async (file) => {
-          const ref = storage().ref(`${Date.now() + '_' + file.name}`);
-          await ref.putFile(file.fileCopyUri);
-          const path = await ref.getDownloadURL();
-          file.path = path;
-
-          await firestore()
-            .collection('GROUPS')
-            .doc(channel.id)
-            .collection('MESSAGES')
-            .add({
-              text,
-              createdAt: new Date().getTime(),
-              user: {
-                id: context.email,
-                name: context.username,
-                avatar: context.avatar,
-              },
-              file,
-            });
-
-          await firestore()
-            .collection('GROUPS')
-            .doc(channel.id)
-            .set(
-              {
-                latestMessage: {
-                  text: text || file.name,
-                  createdAt: new Date().getTime(),
-                  userId: context.email,
-                  username: context.username,
-                },
-              },
-              { merge: true },
-            );
-        });
-      } else {
         await firestore()
           .collection('GROUPS')
           .doc(channel.id)
           .collection('MESSAGES')
           .add({
-            text,
+            text: index === files.length - 1 ? text : '',
             createdAt: new Date().getTime(),
             user: {
               id: context.email,
               name: context.username,
               avatar: context.avatar,
             },
+            file,
           });
 
         await firestore()
@@ -80,7 +51,7 @@ export default function ChatScreen({ route }) {
           .set(
             {
               latestMessage: {
-                text,
+                text: index === files.length - 1 && text ? text : file.name,
                 createdAt: new Date().getTime(),
                 userId: context.email,
                 username: context.username,
@@ -88,9 +59,47 @@ export default function ChatScreen({ route }) {
             },
             { merge: true },
           );
-      }
+
+        notificationApis
+          .create(channel.id, index === files.length - 1 && text ? text : file.name, context.email, context.username)
+          .catch((e) => console.log(e));
+
+        setLoading(false);
+      });
+    } else if (text) {
+      await firestore()
+        .collection('GROUPS')
+        .doc(channel.id)
+        .collection('MESSAGES')
+        .add({
+          text,
+          createdAt: new Date().getTime(),
+          user: {
+            id: context.email,
+            name: context.username,
+            avatar: context.avatar,
+          },
+        });
+
+      await firestore()
+        .collection('GROUPS')
+        .doc(channel.id)
+        .set(
+          {
+            latestMessage: {
+              text,
+              createdAt: new Date().getTime(),
+              userId: context.email,
+              username: context.username,
+            },
+          },
+          { merge: true },
+        );
+
+      notificationApis.create(channel.id, text, context.email, context.username).catch((e) => console.log(e));
     }
 
+    setTextInput('');
     setFiles([]);
   }
 
@@ -131,50 +140,52 @@ export default function ChatScreen({ route }) {
   function renderBubble(props) {
     if (props.currentMessage.file) {
       return (
-        <View
-          style={{
-            ...styles.fileContainer,
-            backgroundColor: props.currentMessage.user.id === context.email ? '#218aff' : '#efefef',
-            borderBottomLeftRadius: props.currentMessage.user.id === context.email ? 15 : 5,
-            borderBottomRightRadius: props.currentMessage.user.id === context.email ? 5 : 15,
-          }}
-        >
+        <View style={styles.fileContainer}>
           {props.currentMessage.user.id !== context.email &&
             (props.currentMessage.user.id !== (props?.previousMessage?.user?.id || '') ||
               new Date(props.currentMessage.createdAt).getDate() !==
                 new Date(props.previousMessage.createdAt).getDate()) && (
               <Text style={styles.name}>{props.currentMessage.user.name}</Text>
             )}
-          <TouchableOpacity onPress={() => handleOpeningFile(props.currentMessage.file)}>
-            <InChatFileTransfer style={{ marginTop: -10 }} file={props.currentMessage.file} />
-          </TouchableOpacity>
-          <View style={{ flexDirection: 'column' }}>
-            {props.currentMessage.text && (
+          <View
+            style={{
+              ...styles.fileContainer,
+              backgroundColor: props.currentMessage.user.id === context.email ? '#218aff' : '#fff',
+              borderBottomLeftRadius: props.currentMessage.user.id === context.email ? 15 : 5,
+              borderBottomRightRadius: props.currentMessage.user.id === context.email ? 5 : 15,
+            }}
+          >
+            <TouchableOpacity onPress={() => handleOpeningFile(props.currentMessage.file)}>
+              <InChatFileTransfer style={{ marginTop: -10 }} file={props.currentMessage.file} />
+            </TouchableOpacity>
+            <View style={{ flexDirection: 'column' }}>
+              {props.currentMessage.text && (
+                <Text
+                  style={{
+                    ...styles.fileText,
+                    color: props.currentMessage.user.id === context.email ? 'white' : 'black',
+                  }}
+                >
+                  {props.currentMessage.text}
+                </Text>
+              )}
               <Text
                 style={{
-                  ...styles.fileText,
                   color: props.currentMessage.user.id === context.email ? 'white' : 'black',
+                  textAlign: 'right',
+                  fontSize: 10,
+                  fontWeight: '400',
+                  marginBottom: 4,
+                  marginRight: 8,
                 }}
               >
-                {props.currentMessage.text}
+                {new Date(props.currentMessage.createdAt).toLocaleTimeString('en-US', {
+                  hour12: true,
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </Text>
-            )}
-            <Text
-              style={{
-                color: props.currentMessage.user.id === context.email ? 'white' : 'black',
-                textAlign: 'right',
-                fontSize: 10,
-                fontWeight: '400',
-                marginBottom: 4,
-                marginRight: 8,
-              }}
-            >
-              {new Date(props.currentMessage.createdAt).toLocaleTimeString('en-US', {
-                hour12: true,
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </Text>
+            </View>
           </View>
         </View>
       );
@@ -240,17 +251,27 @@ export default function ChatScreen({ route }) {
         <TouchableOpacity onPress={_pickDocument}>
           <Ionicons name="attach" size={30} color="orange" />
         </TouchableOpacity>
-        <Send {...props}>
-          <TouchableOpacity onPress={handleSend}>
-            <Ionicons
-              name="send"
-              style={{
-                marginHorizontal: 10,
-                marginBottom: 7,
-              }}
-              size={25}
-              color="#2596be"
-            />
+        <Send {...props} sendButtonProps={{}}>
+          <TouchableOpacity onPress={() => !loading && handleSend(props.text)}>
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                style={{
+                  marginHorizontal: 10,
+                  marginBottom: 8,
+                }}
+              />
+            ) : (
+              <Ionicons
+                name="send"
+                style={{
+                  marginHorizontal: 10,
+                  marginBottom: 7,
+                }}
+                size={25}
+                color="#2596be"
+              />
+            )}
           </TouchableOpacity>
         </Send>
       </View>
@@ -341,6 +362,8 @@ export default function ChatScreen({ route }) {
 
   return (
     <GiftedChat
+      text={textInput}
+      onInputTextChanged={(text) => setTextInput(text)}
       messages={messages}
       user={{ _id: context.email, name: context.name, avatar: context.avatar }}
       placeholder="Type your message here..."

@@ -5,35 +5,35 @@ const InChatFileTransfer = ({ file }) => {
   let source;
   switch (true) {
     case file.type.includes('pdf'): {
-      source = require('../assets/pdf.jpg');
+      source = require('../assets/pdf.png');
       break;
     }
     case file.type.includes('doc'): {
-      source = require('../assets/doc.jpg');
+      source = require('../assets/doc.png');
       break;
     }
     case file.type.includes('xls'): {
-      source = require('../assets/xls.jpg');
+      source = require('../assets/xls.png');
       break;
     }
     case file.type.includes('txt'): {
-      source = require('../assets/txt.jpg');
+      source = require('../assets/txt.png');
       break;
     }
     case file.type.includes('png'): {
-      source = require('../assets/png.jpg');
+      source = require('../assets/png.png');
       break;
     }
     case file.type.includes('jpg'): {
-      source = require('../assets/pdf.jpg');
+      source = require('../assets/pdf.png');
       break;
     }
     case file.type.includes('ppt'): {
-      source = require('../assets/ppt.jpg');
+      source = require('../assets/ppt.png');
       break;
     }
     case file.type.includes('zip'): {
-      source = require('../assets/zip.jpg');
+      source = require('../assets/zip.png');
       break;
     }
     default: {
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   frame: {
-    backgroundColor: '#fff',
+    backgroundColor: '#efefef',
     flexDirection: 'row',
     borderRadius: 10,
     padding: 5,
