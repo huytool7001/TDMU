@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
-import StudyScheduleScreen from '../screens/StudyScheduleScreen';
+import CalendarScreen from '../screens/CalendarScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -111,7 +111,7 @@ const StudyScheduleStackScreen = ({ navigation }) => {
     >
       <Stack.Screen
         name="StudySchedule"
-        component={StudyScheduleScreen}
+        component={CalendarScreen}
         options={{
           title: 'Thời khóa biểu',
           headerTitleAlign: 'center',
