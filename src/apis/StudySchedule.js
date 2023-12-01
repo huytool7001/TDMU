@@ -105,26 +105,6 @@ class StudyScheduleAPIs {
       .then((response) => response.json())
       .catch((err) => console.log(err));
   };
-
-  updateNote = (noteData) => {
-    return fetch(`${server_api_url}/schedule-notes`, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(noteData),
-    })
-      .then((response) => response.json())
-      .catch((err) => console.log(err));
-  };
-
-  deleteNote = (userId, scheduleId) => {
-    return fetch(`${server_api_url}/schedule-notes/${userId}/${scheduleId}`, {
-      method: 'delete',
-    })
-      .then((response) => response.json())
-      .catch((err) => console.log(err));
-  };
 }
 
 const studyScheduleAPIs = new StudyScheduleAPIs();

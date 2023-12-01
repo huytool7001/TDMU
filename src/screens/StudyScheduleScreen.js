@@ -41,18 +41,6 @@ const StudyScheduleScreen = () => {
   const [timer, setTimer] = React.useState(NOTIFICATION_TIMER.SCHEDULE);
   const [pickerVisible, setPickerVisible] = React.useState(false);
 
-  //note
-  const [note, setNote] = React.useState({
-    content: '',
-    color: 0,
-    timer: NOTIFICATION_TIMER.SCHEDULE,
-    notified: false,
-    showPicker: false,
-    scheduleId: '',
-    date: new Date(),
-    startTime: '',
-  });
-
   React.useEffect(() => {
     setContext({ ...context, isLoading: true });
     getSemesters();
@@ -171,44 +159,6 @@ const StudyScheduleScreen = () => {
     });
   }, [timer]);
 
-  const handleSavingNote = async () => {
-    if (note.content) {
-      setContext({ ...context, isLoading: true });
-      await studyScheduleAPIs.updateNote({
-        ...note,
-        userId: context.userId,
-        note: note.content,
-        color: colors[note.color],
-      });
-
-      const curWeek = selectedWeek;
-      await getSchedule();
-      setSelectedWeek(curWeek);
-      setContext({ ...context, isLoading: false });
-    }
-    setModalVisible(false);
-  };
-
-  const handleDeletingNote = async () => {
-    Alert.alert('Lưu ý', 'Bạn có chắc muốn xóa ghi chú này?!', [
-      {
-        text: 'Hủy',
-      },
-      {
-        text: 'Có',
-        onPress: async () => {
-          setContext({ ...context, isLoading: true });
-          await studyScheduleAPIs.deleteNote(context.userId, note.scheduleId);
-          const curWeek = selectedWeek;
-          await getSchedule();
-          setSelectedWeek(curWeek);
-          setModalVisible(false);
-          setContext({ ...context, isLoading: false });
-        },
-      },
-    ]);
-  };
-
   return (
     <View style={{ flex: 1 }}>
       {pickerVisible && (
@@ -223,28 +173,6 @@ const StudyScheduleScreen = () => {
             setPickerVisible(false);
             if (e.type === 'set') {
               setTimer(((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000);
-            }
-          }}
-        />
-      )}
-
-      {note.showPicker && (
-        <RNDateTimePicker
-          mode="time"
-          timeZoneName="Asia/Ho_Chi_Minh"
-          is24Hour={true}
-          value={new Date(1970, 0, 1, Number.parseInt(note.timer / 3600000) - 1, (note.timer % 3600000) / 60000, 0)}
-          minuteInterval={5}
-          onChange={(e, date) => {
-            if (e.type === 'set') {
-              const diff = 1;
-              setNote({
-                ...note,
-                timer: ((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000,
-                showPicker: false,
-              });
-            } else {
-              setNote({ ...note, showPicker: false });
             }
           }}
         />
@@ -322,89 +250,6 @@ const StudyScheduleScreen = () => {
                 color="#cc0000"
               />
             </View>
-          ) : modal === 'note' ? (
-            <View style={{ padding: 10 }}>
-              <View
-                style={{
-                  backgroundColor: '#fff',
-                  justifyContent: 'center',
-                  borderRadius: 4,
-                  padding: 10,
-                  marginBottom: 10,
-                }}
-              >
-                <Text style={{ fontSize: 28, color: '#000', marginBottom: 10, borderBottomWidth: 1 }}>Ghi chú</Text>
-                <TextInput
-                  multiline
-                  value={note.content}
-                  onChangeText={(text) => setNote({ ...note, content: text })}
-                  style={{ borderRadius: 4, borderWidth: 1, maxHeight: 100, marginVertical: 10 }}
-                />
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-                  <Text style={{ flex: 1 }}>Màu</Text>
-                  {colors.map((color, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => setNote({ ...note, color: index })}
-                      style={{ backgroundColor: color, flex: 1, height: 30, borderWidth: index === note.color ? 1 : 0 }}
-                    ></TouchableOpacity>
-                  ))}
-                </View>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-                  <Text style={{ flex: 1 }}>Thông báo</Text>
-                  <Text
-                    style={{ fontSize: 28, color: note.notified ? '#000' : '#9d9d9d', flex: 1 }}
-                    onPress={() => {
-                      if (note.notified) setNote({ ...note, showPicker: true });
-                    }}
-                  >
-                    {`00${Math.floor(note.timer / 3600000)}`.substring(
-                      `00${Math.floor(note.timer / 3600000)}`.length - 2,
-                    )}
-                    :
-                    {`00${Math.floor((note.timer % 3600000) / 60000)}`.substring(
-                      `00${Math.floor((note.timer % 3600000) / 60000)}`.length - 2,
-                    )}
-                  </Text>
-                  <Switch
-                    style={{ flex: 1 }}
-                    value={note.notified}
-                    onValueChange={(value) => setNote({ ...note, notified: value })}
-                  />
-                </View>
-              </View>
-
-              <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#30cc00',
-                    height: 40,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 4,
-                    marginRight: 2,
-                  }}
-                  onPress={handleSavingNote}
-                >
-                  <Text style={{ color: '#fff' }}>Lưu</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#cc0000',
-                    height: 40,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 4,
-                    marginLeft: 2,
-                  }}
-                  onPress={handleDeletingNote}
-                >
-                  <Text style={{ color: '#fff' }}>Xóa</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
           ) : (
             <></>
           )
@@ -480,9 +325,7 @@ const StudyScheduleScreen = () => {
                   <Text>
                     <MaterialIcons name="place" color="#2596be" />
                     {'\t'}
-                    {rowData.ma_phong.split('-').length === 4
-                      ? `${rowData.ma_phong.split('-')[0]}-${rowData.ma_phong.split('-')[1]}`
-                      : rowData.ma_phong.split('-')[0]}
+                    {rowData.ma_phong}
                   </Text>
                   <Text>
                     <MaterialIcons name="access-time" color="#2596be" />
@@ -500,30 +343,6 @@ const StudyScheduleScreen = () => {
                       Danh Sách Sinh Viên
                     </Text>
                   )}
-                  <Text
-                    onPress={() => {
-                      setModal('note');
-                      setModalVisible(true);
-                      setNote({
-                        ...note,
-                        scheduleId: `${rowData.ngay_hoc}_${rowData.tiet_bat_dau}`,
-                        content: rowData.note?.note || '',
-                        color: colors.find((color) => color === rowData.note?.color)
-                          ? colors.findIndex((color) => color === rowData.note?.color)
-                          : 0,
-                        notified: rowData.note?.notified || false,
-                        timer: rowData.note?.timer || NOTIFICATION_TIMER.SCHEDULE,
-                        date: item.ngay_hoc || new Date(),
-                        startTime:
-                          data.ds_tiet_trong_ngay.find((tiet) => tiet.tiet === rowData.tiet_bat_dau).gio_bat_dau || '',
-                      });
-                    }}
-                    style={rowData.note?.color ? { color: rowData.note.color } : null}
-                  >
-                    <MaterialIcons name="speaker-notes" color="#2596be" />
-                    {'\t'}
-                    {rowData.note ? rowData.note.note : 'Ghi chú'}
-                  </Text>
                 </View>
               )}
             />
