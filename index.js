@@ -9,6 +9,13 @@ import notification from './src/utils/notification';
 import { PermissionsAndroid } from 'react-native';
 import firebase from './src/utils/firebase';
 import { decode, encode } from 'base-64';
+import { LogBox } from 'react-native';
+
+// Ignore log notification by message:
+LogBox.ignoreLogs([
+  `ReactImageView: Image source "null" doesn't exist`,
+  'Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.',
+]);
 
 if (!global.btoa) {
   global.btoa = encode;
