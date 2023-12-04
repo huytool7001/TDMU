@@ -73,7 +73,7 @@ const CalendarScreen = () => {
   const [selectedSemester, setSelectedSemester] = React.useState(null);
   const [schedule, setSchedule] = React.useState({});
   const [eventData, setEventData] = React.useState(initialState);
-  // const [marked, setMarked] = React.useState({});
+  const [marked, setMarked] = React.useState({});
   const [dateTimePicker, setDateTimePicker] = React.useState('');
   const [notes, setNotes] = React.useState({});
 
@@ -195,6 +195,7 @@ const CalendarScreen = () => {
 
     if (result.code === 200) {
       let studySchedule = [];
+      let newMarked = {};
       result.data.ds_tuan_tkb.forEach((tuan) => {
         tuan.ds_thoi_khoa_bieu.forEach((buoi) => {
           const data = {
@@ -219,7 +220,10 @@ const CalendarScreen = () => {
             .substring(0, 5)}`;
           studySchedule.push(data);
 
-          // setMarked({ ...marked, [CalendarUtils.getCalendarDateString(new Date(buoi.ngay_hoc))]: { marked: true } });
+          newMarked = {
+            ...newMarked,
+            [CalendarUtils.getCalendarDateString(new Date(buoi.ngay_hoc))]: { marked: true },
+          };
         });
       });
 
@@ -230,6 +234,7 @@ const CalendarScreen = () => {
         return result;
       }, {});
 
+      setMarked(newMarked);
       setSchedule(studySchedule);
     }
     setContext({ ...context, isLoading: false });
@@ -261,11 +266,7 @@ const CalendarScreen = () => {
         todayBottomMargin={10}
         disabledOpacity={0.6}
       >
-        <ExpandableCalendar
-          firstDay={1}
-          // markedDates={marked}
-          enableSwipeMonths
-        />
+        <ExpandableCalendar firstDay={1} markedDates={marked} enableSwipeMonths />
         <TimelineList
           events={merge(notes, schedule)}
           timelineProps={{
