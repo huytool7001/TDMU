@@ -11,26 +11,19 @@ import styles from '../themes/screens/TranscriptScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
 import { USER_ROLE } from '../common/constant';
+import TeacherTransciptList from '../components/TeacherTransciptList';
 
 const TranscriptScreen = () => {
   const [context, setContext] = React.useContext(Context);
 
   const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
   const tableWidth = 384;
   const widthArr = context.role === USER_ROLE.student ? [200, 48, 48, 48, 40] : [196, 92, 48, 48];
   widthArr.forEach((width, index) => (widthArr[index] = (width * windowWidth) / tableWidth));
 
-  const header =
-    context.role === USER_ROLE.student
-      ? ['Môn học', 'Số TC', 'TK(10)', 'KQ', '']
-      : ['Môn học', 'Nhóm tổ', 'Sỉ số', 'DSSV'];
-
-  const modalHeader =
-    context.role === USER_ROLE.student
-      ? ['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần']
-      : ['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'KTDK', 'KTHP'];
-  const modalWidthArr = context.role === USER_ROLE.student ? [120, 120, 120] : [120, 120, 60, 100, 48, 48];
+  const header = ['Môn học', 'Số TC', 'TK(10)', 'KQ', ''];
+  const modalHeader = ['Tên thành phần', 'Trọng số (%)', 'Điểm thành phần'];
+  const modalWidthArr = [120, 120, 120];
   modalWidthArr.forEach((width, index) => (modalWidthArr[index] = (width * windowWidth) / tableWidth));
 
   const isFocus = useIsFocused();
@@ -94,52 +87,42 @@ const TranscriptScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          <>
-            <ScrollView horizontal={true} style={{ flex: 1 }} contentContainerStyle={styles.modalContainer}>
-              <View
-                style={{
-                  padding: 10,
-                  height: context.role === USER_ROLE.student ? 62 : windowHeight,
-                  paddingTop: context.role === USER_ROLE.student ? 0 : 40,
-                  paddingBottom: context.role === USER_ROLE.student ? 0 : 60,
-                }}
-              >
-                <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
-                  <Row
-                    data={modalHeader}
-                    widthArr={modalWidthArr}
-                    textStyle={styles.tableHeader}
-                    style={{ backgroundColor: '#2596be' }}
-                  />
-                  {selectedSubject.length > 0 ? (
-                    <ScrollView>
-                      <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                        <Rows
-                          data={selectedSubject.map((rowData) =>
-                            context.role === USER_ROLE.student
-                              ? [rowData.ten_thanh_phan, rowData.trong_so, rowData.diem_thanh_phan]
-                              : [
-                                  rowData.ma_sv,
-                                  rowData.ho_lot_sv,
-                                  rowData.ten_sv,
-                                  rowData.ma_lop,
-                                  rowData.ds_diem_tp[1].diem,
-                                  rowData.ds_diem_tp[2].diem,
-                                ],
-                          )}
-                          textStyle={{ textAlign: 'center' }}
-                          widthArr={modalWidthArr}
-                        />
-                      </Table>
-                    </ScrollView>
-                  ) : (
-                    <Row data={['Không tìm thấy dữ liệu']} textStyle={styles.notFoundText} />
-                  )}
-                </Table>
-              </View>
-            </ScrollView>
-            <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-          </>
+          context.role === USER_ROLE.teacher ? (
+            <TeacherTransciptList data={selectedSubject} />
+          ) : (
+            <>
+              <ScrollView horizontal={true} style={{ flex: 1 }} contentContainerStyle={styles.modalContainer}>
+                <View>
+                  <Table borderStyle={{ borderWidth: 1 }} style={{ backgroundColor: '#fff' }}>
+                    <Row
+                      data={modalHeader}
+                      widthArr={modalWidthArr}
+                      textStyle={styles.tableHeader}
+                      style={{ backgroundColor: '#2596be' }}
+                    />
+                    {selectedSubject.length > 0 ? (
+                      <ScrollView>
+                        <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                          <Rows
+                            data={selectedSubject.map((rowData) => [
+                              rowData.ten_thanh_phan,
+                              rowData.trong_so,
+                              rowData.diem_thanh_phan,
+                            ])}
+                            textStyle={{ textAlign: 'center' }}
+                            widthArr={modalWidthArr}
+                          />
+                        </Table>
+                      </ScrollView>
+                    ) : (
+                      <Row data={['Không tìm thấy dữ liệu']} textStyle={styles.notFoundText} />
+                    )}
+                  </Table>
+                </View>
+              </ScrollView>
+              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
+            </>
+          )
         }
       ></Modal>
       <View style={dropdownStyles.container}>

@@ -144,52 +144,54 @@ const ExamScheduleScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         children={
-          <View style={styles.modalContainer}>
-            <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-              <TableWrapper style={{ flexDirection: 'row' }}>
-                <Col
-                  data={[
-                    'Mã Môn',
-                    'Môn thi',
-                    'Sỉ số',
-                    'Ngày thi',
-                    'Bắt đầu',
-                    'Phút',
-                    'Phòng thi',
-                    'Cơ sở',
-                    'Hình thức thi',
-                  ]}
-                  textStyle={styles.tableHeader}
-                  style={{ backgroundColor: '#2596be' }}
-                  width={88}
-                  heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
-                />
-                {selectedSubject !== null ? (
+          <>
+            <View style={styles.modalContainer}>
+              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                <TableWrapper style={{ flexDirection: 'row' }}>
                   <Col
                     data={[
-                      selectedSubject.ma_mon,
-                      selectedSubject.ten_mon,
-                      selectedSubject.si_so,
-                      selectedSubject.ngay_thi,
-                      selectedSubject.gio_bat_dau,
-                      selectedSubject.so_phut,
-                      selectedSubject.ma_phong || selectedSubject.ghep_phong,
-                      selectedSubject.ma_co_so,
-                      selectedSubject.hinh_thuc_thi,
+                      'Mã Môn',
+                      'Môn thi',
+                      'Sỉ số',
+                      'Ngày thi',
+                      'Bắt đầu',
+                      'Phút',
+                      'Phòng thi',
+                      'Cơ sở',
+                      'Hình thức thi',
                     ]}
-                    textStyle={{ textAlign: 'center' }}
-                    width={300}
+                    textStyle={styles.tableHeader}
+                    style={{ backgroundColor: '#2596be' }}
+                    width={88}
                     heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
                   />
-                ) : (
-                  <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[270]} />
-                )}
-              </TableWrapper>
-            </Table>
+                  {selectedSubject !== null ? (
+                    <Col
+                      data={[
+                        selectedSubject.ma_mon,
+                        selectedSubject.ten_mon,
+                        selectedSubject.si_so,
+                        selectedSubject.ngay_thi,
+                        selectedSubject.gio_bat_dau,
+                        selectedSubject.so_phut,
+                        selectedSubject.ma_phong || selectedSubject.ghep_phong,
+                        selectedSubject.ma_co_so,
+                        selectedSubject.hinh_thuc_thi,
+                      ]}
+                      textStyle={{ textAlign: 'center' }}
+                      width={300}
+                      heightArr={[30, 30, 30, 30, 30, 30, 30, 30, 30]}
+                    />
+                  ) : (
+                    <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[270]} />
+                  )}
+                </TableWrapper>
+              </Table>
+            </View>
             <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-          </View>
+          </>
         }
-      ></Modal>
+      />
       <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}

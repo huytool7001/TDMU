@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Button, ScrollView, TouchableOpacity, Switch, TextInput, Alert } from 'react-native';
+import { View, Text, FlatList, Button, TouchableOpacity } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -10,12 +10,11 @@ import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
 import { NOTIFICATION_TIMER, USER_ROLE } from '../common/constant';
 import Modal from 'react-native-modal';
-import { Table, Row, Rows } from 'react-native-table-component';
+import StudentList from '../components/StudentList';
 import userApis from '../apis/User';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const StudyScheduleScreen = () => {
-  const colors = ['#ff0000', '#ff6f00', '#f6ff00', '#00ff04', '#0084ff', '#aa00ff', '#ff0073'];
   const isFocus = useIsFocused();
   const [context, setContext] = React.useContext(Context);
   const [data, setData] = React.useState(null);
@@ -184,39 +183,7 @@ const StudyScheduleScreen = () => {
         isVisible={modalVisible}
         children={
           modal === 'students' ? (
-            <>
-              <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContainer} horizontal={true}>
-                <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                  <Row
-                    data={['Mã SV', 'Họ lót', 'Tên', 'Lớp', 'Điện thoại', 'Email']}
-                    textStyle={styles.tableHeader}
-                    style={{ backgroundColor: '#2596be' }}
-                    widthArr={[120, 120, 60, 100, 100, 200]}
-                  />
-                  {students.length !== null ? (
-                    <ScrollView>
-                      <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-                        <Rows
-                          data={students.map((rowData) => [
-                            rowData.ma_sinh_vien,
-                            rowData.ho_lot,
-                            rowData.ten,
-                            rowData.ma_lop,
-                            rowData.dien_thoai,
-                            rowData.e_mail,
-                          ])}
-                          textStyle={{ textAlign: 'center' }}
-                          widthArr={[120, 120, 60, 100, 100, 200]}
-                        />
-                      </Table>
-                    </ScrollView>
-                  ) : (
-                    <Row data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} />
-                  )}
-                </Table>
-              </ScrollView>
-              <Button title="Đóng X" onPress={() => setModalVisible(false)} color="#cc0000"></Button>
-            </>
+            <StudentList data={students} />
           ) : modal === 'timer' ? (
             <View style={{ padding: 10 }}>
               <View

@@ -22,7 +22,9 @@ const TuitionScreen = () => {
   allSemesterWidthArr.forEach((width, index) => (allSemesterWidthArr[index] = (width * windowWidth) / tableWidth));
 
   const selectedSemesterWidthArr = [136, 36, 84, 84, 40];
-  selectedSemesterWidthArr.forEach((width, index) => (selectedSemesterWidthArr[index] = (width * windowWidth) / tableWidth));
+  selectedSemesterWidthArr.forEach(
+    (width, index) => (selectedSemesterWidthArr[index] = (width * windowWidth) / tableWidth),
+  );
 
   const ds_da_thu_width_arr = [176, 102, 102];
   ds_da_thu_width_arr.forEach((width, index) => (ds_da_thu_width_arr[index] = (width * windowWidth) / tableWidth));
@@ -78,36 +80,38 @@ const TuitionScreen = () => {
         style={{ margin: 0 }}
         isVisible={allSemesterModalVisible}
         children={
-          <View style={styles.modalContainer}>
-            <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-              <TableWrapper style={{ flexDirection: 'row' }}>
-                <Col
-                  data={['Học kỳ', 'Học phí', 'Miễn giảm', 'Phải thu', 'Đã thu', 'Còn nợ']}
-                  textStyle={styles.tableHeader}
-                  style={{ backgroundColor: '#2596be' }}
-                  width={88}
-                  heightArr={[30, 30, 30, 30, 30, 30]}
-                />
-                {selectedSemesterModal !== null ? (
+          <>
+            <View style={styles.modalContainer}>
+              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                <TableWrapper style={{ flexDirection: 'row' }}>
                   <Col
-                    data={[
-                      selectedSemesterModal.ten_hoc_ky,
-                      Number(selectedSemesterModal.hoc_phi).toLocaleString('en-US'),
-                      Number(selectedSemesterModal.mien_giam).toLocaleString('en-US'),
-                      Number(selectedSemesterModal.phai_thu).toLocaleString('en-US'),
-                      Number(selectedSemesterModal.da_thu).toLocaleString('en-US'),
-                      Number(selectedSemesterModal.con_no).toLocaleString('en-US'),
-                    ]}
-                    textStyle={{ textAlign: 'center' }}
+                    data={['Học kỳ', 'Học phí', 'Miễn giảm', 'Phải thu', 'Đã thu', 'Còn nợ']}
+                    textStyle={styles.tableHeader}
+                    style={{ backgroundColor: '#2596be' }}
+                    width={88}
                     heightArr={[30, 30, 30, 30, 30, 30]}
                   />
-                ) : (
-                  <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[180]} />
-                )}
-              </TableWrapper>
-            </Table>
+                  {selectedSemesterModal !== null ? (
+                    <Col
+                      data={[
+                        selectedSemesterModal.ten_hoc_ky,
+                        Number(selectedSemesterModal.hoc_phi).toLocaleString('en-US'),
+                        Number(selectedSemesterModal.mien_giam).toLocaleString('en-US'),
+                        Number(selectedSemesterModal.phai_thu).toLocaleString('en-US'),
+                        Number(selectedSemesterModal.da_thu).toLocaleString('en-US'),
+                        Number(selectedSemesterModal.con_no).toLocaleString('en-US'),
+                      ]}
+                      textStyle={{ textAlign: 'center' }}
+                      heightArr={[30, 30, 30, 30, 30, 30]}
+                    />
+                  ) : (
+                    <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[180]} />
+                  )}
+                </TableWrapper>
+              </Table>
+            </View>
             <Button title="Đóng X" onPress={() => setAllSemesterModalVisible(false)} color="#cc0000"></Button>
-          </View>
+          </>
         }
       ></Modal>
       <Modal
@@ -115,45 +119,47 @@ const TuitionScreen = () => {
         style={{ margin: 0 }}
         isVisible={selectedSemesterModalVisible}
         children={
-          <View style={styles.modalContainer}>
-            <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
-              <TableWrapper style={{ flexDirection: 'row' }}>
-                <Col
-                  data={['Mã môn', 'Diễn giải', 'Số TC', 'Học phí', 'Học lại', 'Miễn giảm', 'Phải thu']}
-                  textStyle={styles.tableHeader}
-                  style={{ backgroundColor: '#2596be' }}
-                  width={88}
-                  heightArr={[30, 30, 30, 30, 30, 30, 30]}
-                />
-                {selectedSubject !== null ? (
+          <>
+            <View style={styles.modalContainer}>
+              <Table borderStyle={{ borderWidth: 1 }} style={styles.modalTable}>
+                <TableWrapper style={{ flexDirection: 'row' }}>
                   <Col
-                    data={[
-                      selectedSubject.ma_mon,
-                      selectedSubject.dien_giai,
-                      Number(selectedSubject.so_tin_chi_hp).toLocaleString('en-US'),
-                      Number(selectedSubject.hoc_phi).toLocaleString('en-US'),
-                      selectedSubject.is_hoc_lai === 'true' ? (
-                        <View style={{ display: 'flex', alignItems: 'center' }}>
-                          <Entypo name="check" size={16} color="green" />
-                        </View>
-                      ) : (
-                        <View style={{ display: 'flex', alignItems: 'center' }}>
-                          <Entypo name="cross" size={16} color="red" />
-                        </View>
-                      ),
-                      Number(selectedSubject.mien_giam).toLocaleString('en-US'),
-                      Number(selectedSubject.phai_thu).toLocaleString('en-US'),
-                    ]}
-                    textStyle={{ textAlign: 'center' }}
+                    data={['Mã môn', 'Diễn giải', 'Số TC', 'Học phí', 'Học lại', 'Miễn giảm', 'Phải thu']}
+                    textStyle={styles.tableHeader}
+                    style={{ backgroundColor: '#2596be' }}
+                    width={88}
                     heightArr={[30, 30, 30, 30, 30, 30, 30]}
                   />
-                ) : (
-                  <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[210]} />
-                )}
-              </TableWrapper>
-            </Table>
+                  {selectedSubject !== null ? (
+                    <Col
+                      data={[
+                        selectedSubject.ma_mon,
+                        selectedSubject.dien_giai,
+                        Number(selectedSubject.so_tin_chi_hp).toLocaleString('en-US'),
+                        Number(selectedSubject.hoc_phi).toLocaleString('en-US'),
+                        selectedSubject.is_hoc_lai === 'true' ? (
+                          <View style={{ display: 'flex', alignItems: 'center' }}>
+                            <Entypo name="check" size={16} color="green" />
+                          </View>
+                        ) : (
+                          <View style={{ display: 'flex', alignItems: 'center' }}>
+                            <Entypo name="cross" size={16} color="red" />
+                          </View>
+                        ),
+                        Number(selectedSubject.mien_giam).toLocaleString('en-US'),
+                        Number(selectedSubject.phai_thu).toLocaleString('en-US'),
+                      ]}
+                      textStyle={{ textAlign: 'center' }}
+                      heightArr={[30, 30, 30, 30, 30, 30, 30]}
+                    />
+                  ) : (
+                    <Col data={['Không tìm thấy dữ liệu']} textStyle={{ textAlign: 'center' }} heightArr={[210]} />
+                  )}
+                </TableWrapper>
+              </Table>
+            </View>
             <Button title="Đóng X" onPress={() => setSelectedSemesterModalVisible(false)} color="#cc0000"></Button>
-          </View>
+          </>
         }
       ></Modal>
       <View style={dropdownStyles.container}>
