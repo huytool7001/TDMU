@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, useWindowDimensions, Alert } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions, Alert, RefreshControl } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 import * as Animatable from 'react-native-animatable';
@@ -28,6 +28,7 @@ const HomeScreen = () => {
   });
 
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const getData = async () => {
     const result = await articleAPIs.search();
@@ -93,11 +94,18 @@ const HomeScreen = () => {
     return Alert.alert('Downloading file...', '1 tệp đang được tải xuống', [], { cancelable: true });
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getData();
+    setRefreshing(false);
+  };
+
   return (
     <ScrollView
       style={{
         flex: 1,
       }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <Modal
         children={
@@ -124,11 +132,8 @@ const HomeScreen = () => {
               </Text>
               <Text style={styles.modalSubtitle}>{new Date(selected.data?.ngay_dang_tin).toLocaleString('en-GB')}</Text>
               <ScrollView>
-                <RenderHtml
-                  contentWidth={width}
-                  source={{ html: selected.key === 'tb' ? selected.data.tom_tat : selected.data.noi_dung }}
-                />
-                {selected.data.files?.length && (
+                <RenderHtml contentWidth={width} source={{ html: selected.data.tom_tat || selected.data.noi_dung }} />
+                {selected.data.files?.length ? (
                   <View style={{ borderTopWidth: 0.5 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tệp đính kèm</Text>
                     {selected.data.files.map((file, index) => (
@@ -146,6 +151,8 @@ const HomeScreen = () => {
                       </View>
                     ))}
                   </View>
+                ) : (
+                  <></>
                 )}
               </ScrollView>
             </Animatable.View>
