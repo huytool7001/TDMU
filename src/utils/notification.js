@@ -13,26 +13,31 @@ const onMessageReceived = async (message) => {
   });
   // Alert.alert('A new FCM message arrived!', JSON.stringify(message));
   // Display a notification
-  await notifee.displayNotification({
-    title: message.notification.title,
-    body: message.notification.body,
-    android: {
-      channelId,
-      smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-      // pressAction is needed if you want the notification to open the app when pressed
-      pressAction: {
-        id: 'default',
+
+  if (message.notification?.title && message.notification?.body) {
+    await notifee.displayNotification({
+      title: message.notification?.title,
+      body: message.notification?.body,
+      android: {
+        channelId,
+        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+        color: '#1692c9',
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: 'default',
+        },
       },
-    },
-  });
+    });
+  }
 };
 
 class Notification {
   constructor() {}
 
-  load = () => {
+  load = async () => {
     messaging().onMessage(onMessageReceived);
     messaging().setBackgroundMessageHandler(onMessageReceived);
+    notifee.onBackgroundEvent(async () => {});
   };
 }
 

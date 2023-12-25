@@ -40,7 +40,7 @@ const AnnouncementScreen = () => {
         data.announcements.map((announcement) => ({
           id: announcement.id,
           tieu_de: announcement.title,
-          ngay_hieu_chinh: announcement.createdAt,
+          ngay_hieu_chinh: announcement.at,
           noi_dung: announcement.body,
           files: announcement.files,
         })),
@@ -103,7 +103,7 @@ const AnnouncementScreen = () => {
               <ScrollView>
                 <RenderHtml contentWidth={width} source={{ html: announcements[selected].noi_dung }} />
                 {announcements[selected].files?.length ? (
-                  <View style={{ borderTopWidth: 0.5 }}>
+                  <View style={{ borderTopWidth: 0.5, marginVertical: 20 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tệp đính kèm</Text>
                     {announcements[selected].files.map((file, index) => (
                       <View key={index} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
