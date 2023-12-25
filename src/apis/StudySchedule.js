@@ -1,4 +1,5 @@
 import { DKMH_API_URL, SERVER_API_URL } from '../common/constant';
+import { TEST_SCHEDULE, TEST_USER_ID } from '../utils/mock';
 
 const dkmh_api_url = `${DKMH_API_URL}/sch`;
 const server_api_url = `${SERVER_API_URL}/`;
@@ -60,18 +61,11 @@ class StudyScheduleAPIs {
         },
       }),
     });
-    schedule = await schedule.json();
-    let notes = await fetch(`${server_api_url}/schedule-notes?userId=${userId}`);
-    notes = await notes.json();
 
-    schedule.data?.ds_tuan_tkb?.forEach((tuan, i) => {
-      tuan?.ds_thoi_khoa_bieu?.forEach((tkb, j) => {
-        const existed = notes.find((item) => item.scheduleId === `${tkb.ngay_hoc}_${tkb.tiet_bat_dau}`);
-        if (existed) {
-          schedule.data.ds_tuan_tkb[i].ds_thoi_khoa_bieu[j].note = existed;
-        }
-      });
-    });
+    schedule = await schedule.json();
+    if (userId === TEST_USER_ID) {
+      schedule.data?.ds_tuan_tkb[17].ds_thoi_khoa_bieu.push(TEST_SCHEDULE);
+    }
 
     return schedule;
   };

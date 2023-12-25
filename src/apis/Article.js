@@ -14,6 +14,8 @@ class ArticleAPIs {
       body: JSON.stringify({
         filter: {
           is_hien_thi: true,
+          is_hinh_dai_dien: true,
+          so_luong_hinh_dai_dien: 1,
         },
         additional: {
           paging: {
@@ -46,8 +48,11 @@ class ArticleAPIs {
       body: JSON.stringify({
         filter: {
           id,
+          is_hien_thi: true,
           is_hinh_dai_dien: false,
           is_noi_dung: true,
+          is_quyen_xem: false,
+          so_luong_hinh_dai_dien: 1,
         },
         additional: {
           paging: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Button, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -8,11 +8,10 @@ import { Context } from '../utils/context';
 import styles from '../themes/screens/StudyScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
-import { NOTIFICATION_TIMER, USER_ROLE } from '../common/constant';
+import { USER_ROLE } from '../common/constant';
 import Modal from 'react-native-modal';
 import StudentList from '../components/StudentList';
 import userApis from '../apis/User';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const StudyScheduleScreen = () => {
   const isFocus = useIsFocused();
@@ -30,20 +29,14 @@ const StudyScheduleScreen = () => {
   const [selectedWeek, setSelectedWeek] = React.useState(null);
 
   //modal
-  const [modal, setModal] = React.useState('');
   const [modalVisible, setModalVisible] = React.useState(false);
 
   //students
   const [students, setStudents] = React.useState([]);
 
-  //timer
-  const [timer, setTimer] = React.useState(NOTIFICATION_TIMER.SCHEDULE);
-  const [pickerVisible, setPickerVisible] = React.useState(false);
-
   React.useEffect(() => {
     setContext({ ...context, isLoading: true });
     getSemesters();
-    getUser();
     setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
@@ -83,9 +76,8 @@ const StudyScheduleScreen = () => {
     const result = await studyScheduleAPIs.getSchedule(context.token, selectedSemester, context.userId);
 
     if (result.code === 200) {
-      setData(result.data);
-
       let isSelectedWeek = false;
+      let isSelected = 0;
       result.data.ds_tuan_tkb.forEach((tuan, index) => {
         let dateParts = tuan.ngay_bat_dau?.split('/');
         tuan.ngay_bat_dau = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
@@ -95,14 +87,18 @@ const StudyScheduleScreen = () => {
 
         const date = new Date();
         if (tuan.ngay_bat_dau <= date && tuan.ngay_ket_thuc > date) {
-          setSelectedWeek(index);
-          isSelectedWeek = true;
+          isSelected = index;
+          // setSelectedWeek(index);
+          // isSelectedWeek = true;
         }
       });
 
-      if (!isSelectedWeek) {
-        setSelectedWeek(0);
-      }
+      // if (!isSelectedWeek) {
+      //   setSelectedWeek(0);
+      // }
+
+      setSelectedWeek(isSelected);
+      setData(result.data);
     }
   };
 
@@ -115,13 +111,13 @@ const StudyScheduleScreen = () => {
       setStudents([]);
     }
 
-    setModal('students');
     setModalVisible(true);
   };
 
   React.useEffect(() => {
     setContext({ ...context, isLoading: true });
-    if (data !== null && selectedWeek !== null) {
+    if (data !== null && selectedWeek !== null && data.ds_tuan_tkb[selectedWeek] !== undefined) {
+      console.log(selectedWeek);
       let result = data.ds_tuan_tkb[selectedWeek].ds_thoi_khoa_bieu.reduce((accumulator, currentValue) => {
         (accumulator[currentValue['ngay_hoc']] = accumulator[currentValue['ngay_hoc']] || []).push(currentValue);
         return accumulator;
@@ -144,84 +140,15 @@ const StudyScheduleScreen = () => {
     setSemesterOpen(false);
   }, []);
 
-  const getUser = async () => {
-    const user = await userApis.get(context.userId);
-
-    if (user) {
-      setTimer(user.timer.schedule);
-    }
-  };
-
-  React.useEffect(() => {
-    userApis.update({
-      'timer.schedule': timer,
-    });
-  }, [timer]);
-
   return (
     <View style={{ flex: 1 }}>
-      {pickerVisible && (
-        <RNDateTimePicker
-          mode="time"
-          timeZoneName="Asia/Ho_Chi_Minh"
-          is24Hour={true}
-          value={new Date(1970, 0, 1, Number.parseInt(timer / 3600000) - 1, (timer % 3600000) / 60000, 0)}
-          minuteInterval={5}
-          onChange={(e, date) => {
-            const diff = 1;
-            setPickerVisible(false);
-            if (e.type === 'set') {
-              setTimer(((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000);
-            }
-          }}
-        />
-      )}
-
       <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
-        children={
-          modal === 'students' ? (
-            <StudentList data={students} />
-          ) : modal === 'timer' ? (
-            <View style={{ padding: 10 }}>
-              <View
-                style={{
-                  backgroundColor: '#fff',
-                  justifyContent: 'center',
-                  height: 100,
-                  borderRadius: 4,
-                  padding: 10,
-                  marginBottom: 10,
-                }}
-              >
-                <View style={{ display: 'flex', flexDirection: 'row' }}>
-                  <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ học</Text>
-                  {/* <Switch style={{ flex: 1 }} /> */}
-                </View>
-                <TouchableOpacity style={{ margin: 10 }} onPress={() => setPickerVisible(true)}>
-                  <Text style={{ fontSize: 32, color: '#000', textAlign: 'right' }}>
-                    {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
-                    {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
-                      `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
-                    )}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+        children={<StudentList data={students} />}
+      />
 
-              <Button
-                title="Đóng X"
-                style={{ bottom: 0, position: 'absolute' }}
-                onPress={() => setModalVisible(false)}
-                color="#cc0000"
-              />
-            </View>
-          ) : (
-            <></>
-          )
-        }
-      ></Modal>
       <View style={dropdownStyles.container}>
         <DropDownPicker
           open={semesterOpen}
@@ -316,28 +243,6 @@ const StudyScheduleScreen = () => {
           </View>
         )}
       />
-
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderColor: 'rgba(0,0,0,0.2)',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 70,
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-          height: 70,
-          backgroundColor: '#2596be',
-          borderRadius: 100,
-        }}
-        onPress={() => {
-          setModal('timer');
-          setModalVisible(true);
-        }}
-      >
-        <MaterialIcons name="access-alarm" size={30} color="#fff" />
-      </TouchableOpacity>
     </View>
   );
 };

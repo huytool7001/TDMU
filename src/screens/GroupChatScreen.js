@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState, useContext } from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native';
+import { FlatList, StyleSheet, View, TouchableOpacity, Text, RefreshControl } from 'react-native';
 import { Divider, List } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Context } from '../utils/context';
@@ -69,14 +69,13 @@ export default function GroupChatScreen({ navigation }) {
   };
 
   useEffect(() => {
-    if (isFocused || refresh) {
+    if (isFocused) {
       getGroups();
     }
-  }, [isFocused, refresh]);
+  }, [isFocused]);
 
   const createGroupChat = async () => {
     if (selectedSubject !== null) {
-      setRefresh(false);
       setContext({ ...context, isLoading: true });
 
       const res = await transcriptAPIs.getStudents(context.token, selectedSubject.id_nhom_hoc);
@@ -107,9 +106,16 @@ export default function GroupChatScreen({ navigation }) {
           setSelectedSubject(null);
         })
         .catch((e) => console.log(e));
+
+      await getGroups();
       setContext({ ...context, isLoading: false });
-      setRefresh(true);
     }
+  };
+
+  const onRefresh = async () => {
+    setRefresh(true);
+    await getGroups();
+    setRefresh(false);
   };
 
   return (
@@ -208,6 +214,7 @@ export default function GroupChatScreen({ navigation }) {
         data={channels}
         keyExtractor={(item) => item.id.toString()}
         ItemSeparatorComponent={() => <Divider />}
+        refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />}
         renderItem={({ item }) => (
           <List.Item
             title={item.name}

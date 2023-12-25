@@ -55,6 +55,7 @@ export default function ChatScreen({ route }) {
                 createdAt: new Date().getTime(),
                 userId: context.email,
                 username: context.username,
+                system: false
               },
             },
             { merge: true },

@@ -6,7 +6,6 @@ import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from 'react-native-paper';
-import ProfileScreen from '../screens/ProfileScreen';
 import ChatScreen from '../screens/ChatScreen';
 import GroupChatScreen from '../screens/GroupChatScreen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
@@ -15,6 +14,7 @@ import { Context } from '../utils/context';
 import firestore from '@react-native-firebase/firestore';
 import { USER_ROLE } from '../common/constant';
 import AddMembersScreen from '../screens/AddMembersScreen';
+import AnnouncementScreen from '../screens/AnnouncementScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -51,10 +51,10 @@ const BottomTabNavigator = () => {
       />
       <Tab.Screen
         name="ProfileStack"
-        component={ProfileStackScreen}
+        component={AnnouncementStackScreen}
         options={{
-          tabBarLabel: 'Hồ sơ',
-          tabBarIcon: ({ color }) => <Icon name="badge-account-horizontal" size={26} color={color} />,
+          tabBarLabel: 'Thông báo',
+          tabBarIcon: ({ color }) => <Icon name="bell" size={26} color={color} />,
         }}
       />
     </Tab.Navigator>
@@ -131,7 +131,7 @@ const StudyScheduleStackScreen = ({ navigation }) => {
   );
 };
 
-const ProfileStackScreen = ({ navigation }) => {
+const AnnouncementStackScreen = ({ navigation }) => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -145,10 +145,10 @@ const ProfileStackScreen = ({ navigation }) => {
       }}
     >
       <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Announcement"
+        component={AnnouncementScreen}
         options={{
-          title: 'Hồ sơ',
+          title: 'Thông báo',
           headerTitleAlign: 'center',
           headerLeft: () => (
             <Icon

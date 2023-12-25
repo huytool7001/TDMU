@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
-    marginBottom: 8,
   },
   text: {
     color: '#000',
@@ -26,19 +25,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    borderBottomColor: '#dcdcdc',
+    borderBottomWidth: 2,
+    padding: 10,
   },
   modalContainer: { flex: 1, backgroundColor: '#fff', padding: 8 },
   modalHeader: {
     fontSize: 24,
     textAlign: 'justify',
-    color: '#000'
+    color: '#000',
   },
   modalSubtitle: {
     textAlign: 'right',
     color: '#a2a2a2',
     fontStyle: 'italic',
-    marginVertical: 8
-  }
+    marginVertical: 8,
+  },
 });
 
 export default styles;

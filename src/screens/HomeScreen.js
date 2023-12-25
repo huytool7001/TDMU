@@ -1,29 +1,32 @@
 import React from 'react';
-import { View, Text, ScrollView, useWindowDimensions, Alert, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  useWindowDimensions,
+  Alert,
+  RefreshControl,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 import * as Animatable from 'react-native-animatable';
 import RenderHtml from 'react-native-render-html';
 import styles from '../themes/screens/HomeScreen';
 import articleAPIs from '../apis/Article';
-import announcementApis from '../apis/Announcement';
 import { useIsFocused } from '@react-navigation/native';
 import { Context } from '../utils/context';
-import RNFetchBlob from 'rn-fetch-blob';
 
 const HomeScreen = () => {
   const isFocus = useIsFocused();
   const { width } = useWindowDimensions();
   const [context, setContext] = React.useContext(Context);
-  const [data, setData] = React.useState({
-    tb: [],
-    hd: [],
-  });
-  const [announcements, setAnnouncements] = React.useState([]);
+  const [data, setData] = React.useState([]);
 
   const [selected, setSelected] = React.useState({
     key: '',
-    index: null,
     data: null,
   });
 
@@ -33,40 +36,19 @@ const HomeScreen = () => {
   const getData = async () => {
     const result = await articleAPIs.search();
     if (result.code === 200) {
-      setData({
-        ...data,
-        tb: result.data.ds_bai_viet.filter((bai_viet) => bai_viet.ky_hieu === 'tb'),
-        hd: result.data.ds_bai_viet.filter((bai_viet) => bai_viet.ky_hieu === 'hd'),
-      });
-    }
-
-    const announcements = await announcementApis.search({ showing: true, userId: context.userId });
-    if (announcements.announcements.length) {
-      setAnnouncements(
-        announcements.announcements.map((announcement) => ({
-          id: announcement.id,
-          tieu_de: announcement.title,
-          ngay_dang_tin: announcement.createdAt,
-          noi_dung: announcement.body,
-          files: announcement.files,
-        })),
-      );
+      result.data.ds_bai_viet.reverse();
+      setData(result.data.ds_bai_viet);
     }
   };
 
-  const getSelected = async (key, index) => {
-    if (key === 'announcement') {
-      setSelected({ ...selected, key, index, data: announcements[index] });
-    } else {
-      const result = await articleAPIs.get(data[`${key}`][index].id);
-      if (result.code === 200) {
-        setSelected({
-          ...selected,
-          key,
-          index,
-          data: result.data.ds_bai_viet[0],
-        });
-      }
+  const getSelected = async (key, id) => {
+    const result = await articleAPIs.get(id);
+    if (result.code === 200) {
+      setSelected({
+        ...selected,
+        key,
+        data: result.data.ds_bai_viet[0],
+      });
     }
   };
 
@@ -76,24 +58,6 @@ const HomeScreen = () => {
     setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
-  const handleOpeningFile = async (file) => {
-    const rootDir = RNFetchBlob.fs.dirs.DownloadDir;
-    const options = {
-      fileCache: true,
-      addAndroidDownloads: {
-        path: rootDir + '/' + file.name,
-        description: 'downloading file...',
-        notification: true,
-        // useDownloadManager works with Android only
-        useDownloadManager: true,
-      },
-    };
-
-    await RNFetchBlob.config(options).fetch('GET', file.path);
-
-    return Alert.alert('Downloading file...', '1 tệp đang được tải xuống', [], { cancelable: true });
-  };
-
   const onRefresh = async () => {
     setRefreshing(true);
     await getData();
@@ -101,27 +65,125 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView
+    <View
       style={{
         flex: 1,
       }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <Modal
-        children={
-          <View>
-            <Text></Text>
-          </View>
+      <FlatList
+        data={data.slice(1)}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={() =>
+          data.length ? (
+            <TouchableOpacity
+              style={{
+                borderColor: '#dcdcdc',
+                borderWidth: 2,
+                borderRadius: 4,
+              }}
+              onPress={() => {
+                getSelected(data[0].ky_hieu, data[0].id);
+                setModalVisible(true);
+              }}
+            >
+              <Image
+                source={data[0].hinh_dai_dien ? { uri: data[0].hinh_dai_dien } : require('../assets/tn2-8506.jpg')}
+                style={{
+                  width: '100%',
+                  height: 200,
+                  resizeMode: 'cover',
+                  marginBottom: 8,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  marginHorizontal: 8,
+                  textAlign: 'justify',
+                }}
+              >
+                {data[0].tieu_de}
+              </Text>
+              <Text
+                style={{
+                  marginHorizontal: 8,
+                  fontSize: 18,
+                  marginBottom: 5,
+                  textAlign: 'right',
+                  fontStyle: 'italic',
+                }}
+              >
+                {new Date(data[0].ngay_hieu_chinh).toLocaleString('en-GB')}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <></>
+          )
         }
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderColor: '#dcdcdc',
+              borderWidth: 2,
+              borderRadius: 4,
+              marginTop: 10,
+              padding: 10,
+            }}
+            onPress={() => {
+              getSelected(item.ky_hieu, item.id);
+              setModalVisible(true);
+            }}
+          >
+            <Image
+              style={{
+                width: 100,
+                height: 100,
+                resizeMode: 'contain',
+                borderRadius: 4,
+              }}
+              source={item.hinh_dai_dien ? { uri: item.hinh_dai_dien } : require('../assets/Icon.png')}
+            />
+            <View style={{ flex: 1, marginHorizontal: 5 }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  textAlign: 'justify',
+                  marginLeft: 5,
+                }}
+              >
+                {item.tieu_de}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  textAlign: 'right',
+                  fontStyle: 'italic',
+                }}
+              >
+                {new Date(item.ngay_hieu_chinh).toLocaleString('en-GB')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={{
+          margin: 8,
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+        numColumns={1}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
+
       <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
         isVisible={modalVisible}
         onModalHide={() => {
-          if (selected.key === 'announcement') {
-            announcementApis.reply(selected.data.id, { studentId: context.userId });
-          }
           setSelected({ ...selected, key: '', index: null, data: null });
         }}
         children={
@@ -130,98 +192,19 @@ const HomeScreen = () => {
               <Text style={styles.modalHeader}>
                 <AntDesign name="arrowleft" size={24} onPress={() => setModalVisible(false)} /> {selected.data?.tieu_de}
               </Text>
-              <Text style={styles.modalSubtitle}>{new Date(selected.data?.ngay_dang_tin).toLocaleString('en-GB')}</Text>
+              <Text style={styles.modalSubtitle}>
+                {new Date(selected.data?.ngay_hieu_chinh).toLocaleString('en-GB')}
+              </Text>
               <ScrollView>
                 <RenderHtml contentWidth={width} source={{ html: selected.data.tom_tat || selected.data.noi_dung }} />
-                {selected.data.files?.length ? (
-                  <View style={{ borderTopWidth: 0.5 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tệp đính kèm</Text>
-                    {selected.data.files.map((file, index) => (
-                      <View key={index} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <AntDesign name="link" />
-                        <Text
-                          key={index}
-                          numberOfLines={1}
-                          ellipsizeMode="middle"
-                          style={{ marginLeft: 10, width: '90%' }}
-                          onPress={() => handleOpeningFile(file)}
-                        >
-                          {file.name}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ) : (
-                  <></>
-                )}
               </ScrollView>
             </Animatable.View>
           ) : (
             <></>
           )
         }
-      ></Modal>
-      <View style={{ marginTop: 8 }}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Thông báo</Text>
-        </View>
-        <View style={styles.container}>
-          {data.tb.map((bai_viet, index) => (
-            <View key={bai_viet.id} style={styles.article}>
-              <Text
-                style={styles.text}
-                onPress={() => {
-                  getSelected('tb', index);
-                  setModalVisible(true);
-                }}
-              >
-                <AntDesign name="play" color="#000" /> {bai_viet.tieu_de}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-      <View>
-        <View style={styles.header}>
-          <Text style={styles.title}>Hướng dẫn</Text>
-        </View>
-        <View style={styles.container}>
-          {data.hd.map((bai_viet, index) => (
-            <View key={bai_viet.id} style={styles.article}>
-              <Text
-                style={styles.text}
-                onPress={() => {
-                  getSelected('hd', index);
-                  setModalVisible(true);
-                }}
-              >
-                <AntDesign name="play" color="#000" /> {bai_viet.tieu_de}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-      <View style={{ marginTop: 8 }}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Khác</Text>
-        </View>
-        <View style={styles.container}>
-          {announcements.map((bai_viet, index) => (
-            <View key={bai_viet.id} style={styles.article}>
-              <Text
-                style={styles.text}
-                onPress={() => {
-                  getSelected('announcement', index);
-                  setModalVisible(true);
-                }}
-              >
-                <AntDesign name="play" color="#000" /> {bai_viet.tieu_de}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      />
+    </View>
   );
 };
 

@@ -15,6 +15,7 @@ import { LogBox } from 'react-native';
 LogBox.ignoreLogs([
   `ReactImageView: Image source "null" doesn't exist`,
   'Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.',
+  `TypeError: Cannot read property 'ds_thoi_khoa_bieu' of undefined`,
 ]);
 
 if (!global.btoa) {

@@ -4,15 +4,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, TableWrapper, Cell, Col, Rows } from 'react-native-table-component';
 import Modal from 'react-native-modal';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import examScheduleAPIs from '../apis/ExamSchedule';
 import { Context } from '../utils/context';
 import styles from '../themes/screens/ExamScheduleScreen';
 import dropdownStyles from '../themes/components/DropDown';
 import { useIsFocused } from '@react-navigation/native';
-import { NOTIFICATION_TIMER, USER_ROLE } from '../common/constant';
-import userApis from '../apis/User';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { USER_ROLE } from '../common/constant';
 
 const ExamScheduleScreen = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -32,29 +29,9 @@ const ExamScheduleScreen = () => {
 
   const [selectedSubject, setSelectedSubject] = React.useState(null);
 
-  //timer
-  const [timer, setTimer] = React.useState(NOTIFICATION_TIMER.EXAM);
-  const [timerModalVisible, setTimerModalVisible] = React.useState(false);
-  const [pickerVisible, setPickerVisible] = React.useState(false);
-
-  const getUser = async () => {
-    const user = await userApis.get(context.userId);
-
-    if (user) {
-      setTimer(user.timer.exam);
-    }
-  };
-
-  React.useEffect(() => {
-    userApis.update({
-      'timer.exam': timer,
-    });
-  }, [timer]);
-
   React.useEffect(() => {
     setContext({ ...context, isLoading: true });
     getSemesters();
-    getUser();
     setContext({ ...context, isLoading: false });
   }, [isFocus]);
 
@@ -85,60 +62,6 @@ const ExamScheduleScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Modal
-        onBackButtonPress={() => setTimerModalVisible(false)}
-        isVisible={timerModalVisible}
-        children={
-          <>
-            <View
-              style={{
-                backgroundColor: '#fff',
-                justifyContent: 'center',
-                height: 100,
-                borderRadius: 4,
-                padding: 10,
-                marginBottom: 10,
-              }}
-            >
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <Text style={{ fontSize: 16, color: '#000', flex: 3 }}>Thông báo trước giờ thi</Text>
-                {/* <Switch style={{ flex: 1 }} /> */}
-              </View>
-              <TouchableOpacity style={{ margin: 10 }} onPress={() => setPickerVisible(true)}>
-                <Text style={{ fontSize: 32, color: '#000', textAlign: 'right' }}>
-                  {`00${Math.floor(timer / 3600000)}`.substring(`00${Math.floor(timer / 3600000)}`.length - 2)}:
-                  {`00${Math.floor((timer % 3600000) / 60000)}`.substring(
-                    `00${Math.floor((timer % 3600000) / 60000)}`.length - 2,
-                  )}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <Button
-              title="Đóng X"
-              style={{ bottom: 0, position: 'absolute' }}
-              onPress={() => setTimerModalVisible(false)}
-              color="#cc0000"
-            />
-          </>
-        }
-      />
-      {pickerVisible && (
-        <RNDateTimePicker
-          mode="time"
-          timeZoneName="Asia/Ho_Chi_Minh"
-          is24Hour={true}
-          value={new Date(1970, 0, 1, Number.parseInt(timer / 3600000) - 1, (timer % 3600000) / 60000, 0)}
-          minuteInterval={5}
-          onChange={(e, date) => {
-            const diff = 1;
-            setPickerVisible(false);
-            if (e.type === 'set') {
-              setTimer(((date.getHours() + diff) % 24) * 3600000 + date.getMinutes() * 60000);
-            }
-          }}
-        />
-      )}
       <Modal
         onBackButtonPress={() => setModalVisible(false)}
         style={{ margin: 0 }}
@@ -258,25 +181,6 @@ const ExamScheduleScreen = () => {
           </Table>
         ) : null}
       </ScrollView>
-
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderColor: 'rgba(0,0,0,0.2)',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 70,
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-          height: 70,
-          backgroundColor: '#2596be',
-          borderRadius: 100,
-        }}
-        onPress={() => setTimerModalVisible(true)}
-      >
-        <MaterialIcons name="access-alarm" size={30} color="#fff" />
-      </TouchableOpacity>
     </View>
   );
 };

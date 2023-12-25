@@ -120,6 +120,13 @@ const DrawerContent = (props) => {
                 props.navigation.navigate('Profile');
               }}
             />
+            <DrawerItem
+              label="Cài đặt"
+              icon={(color) => <Icon name="cog" size={18} color={color} />}
+              onPress={() => {
+                props.navigation.navigate('Setting');
+              }}
+            />
           </Drawer.Section>
         </View>
       </DrawerContentScrollView>

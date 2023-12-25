@@ -18,6 +18,7 @@ import TuitionScreen from './src/screens/TuitionScreen';
 import { USER_ROLE } from './src/common/constant';
 import BottomTabNavigator from './src/components/BottomTab';
 import { MenuProvider } from 'react-native-popup-menu';
+import SettingScreen from './src/screens/SettingScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -125,6 +126,21 @@ function App() {
                 component={ProfileScreen}
                 options={{
                   title: 'Hồ sơ',
+                  headerStyle: {
+                    backgroundColor: '#2596be',
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                  },
+                  headerTitleAlign: 'center',
+                }}
+              />
+              <Drawer.Screen
+                name="Setting"
+                component={SettingScreen}
+                options={{
+                  title: 'Cài đặt',
                   headerStyle: {
                     backgroundColor: '#2596be',
                   },

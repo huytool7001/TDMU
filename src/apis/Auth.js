@@ -27,6 +27,7 @@ class AuthAPIs {
             userId: response.userName,
             userToken: response.access_token,
             email: response.principal,
+            name: response.name
           }),
           headers: {
             'Content-Type': 'application/json',

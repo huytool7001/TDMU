@@ -88,6 +88,10 @@ const CalendarScreen = () => {
   };
 
   const createNewEvent = async () => {
+    if (!eventData.title || !eventData.summary || !eventData.start || !eventData.end || !eventData.color) {
+      return Alert.alert('Sorry', 'Bạn chưa điền đầy đủ thông tin');
+    }
+
     setContext({ ...context, isLoading: true });
     const start = eventData.start;
     start.setHours(start.getHours() + 7);
@@ -106,6 +110,10 @@ const CalendarScreen = () => {
   };
 
   const updateEvent = async () => {
+    if (!eventData.title || !eventData.summary || !eventData.start || !eventData.end || !eventData.color) {
+      return Alert.alert('Sorry', 'Bạn chưa điền đầy đủ thông tin');
+    }
+
     setContext({ ...context, isLoading: true });
     const start = new Date(eventData.start);
     start.setHours(start.getHours() + 7);
