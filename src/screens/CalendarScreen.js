@@ -1,5 +1,16 @@
 import React from 'react';
-import { Alert, Text, TouchableOpacity, View, TextInput, Button, Pressable, Dimensions } from 'react-native';
+import {
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+  Button,
+  Pressable,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { ExpandableCalendar, TimelineList, CalendarProvider, CalendarUtils } from 'react-native-calendars';
 import ReactNativeModal from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -60,7 +71,7 @@ const initialState = {
   room: '',
   time: '',
   lecturer: '',
-  group: '',
+  note: '',
   numberOfLessons: '',
   id: '',
 };
@@ -76,6 +87,7 @@ const CalendarScreen = () => {
   const [marked, setMarked] = React.useState({});
   const [dateTimePicker, setDateTimePicker] = React.useState('');
   const [notes, setNotes] = React.useState({});
+  const [scheduleNotes, setScheduleNotes] = React.useState([]);
 
   const onDateChanged = (date, source) => {
     console.log('TimelineCalendarScreen onDateChanged: ', date, source);
@@ -214,11 +226,10 @@ const CalendarScreen = () => {
               .find((e) => e.tiet === buoi.tiet_bat_dau + buoi.so_tiet - 1)
               .gio_ket_thuc.substring(0, 4)
               .concat('0')}:00`,
-            title: buoi.ten_mon,
+            title: `${buoi.ten_mon} - ${buoi.ma_nhom}`,
             isFixed: true,
             room: `Phòng: ${buoi.ma_phong}`,
             lecturer: context.role === USER_ROLE.student ? `Giảng viên: ${buoi.ten_giang_vien}` : '',
-            group: `Nhóm: ${buoi.ma_nhom}`,
             numberOfLessons: `Số tiết: ${buoi.so_tiet}`,
           };
           data.summary = `${context.role === USER_ROLE.student ? `${data.lecturer}\n` : ''}${data.room}`;
@@ -251,6 +262,7 @@ const CalendarScreen = () => {
   React.useEffect(() => {
     if (selectedSemester) {
       getSchedule();
+      getScheduleNotes();
     }
   }, [selectedSemester]);
 
@@ -263,6 +275,50 @@ const CalendarScreen = () => {
     overlapEventsSpacing: 8,
     rightEdgeSpacing: 24,
   };
+
+  const getScheduleNotes = async () => {
+    const notes = await studyScheduleAPIs.getScheduleNotes({ userId: context.userId });
+    if (!notes.error) {
+      setScheduleNotes(notes);
+    }
+  };
+
+  const updateScheduleNote = async () => {
+    setContext({ ...context, isLoading: true });
+    await studyScheduleAPIs.updateScheduleNote({
+      userId: context.userId,
+      scheduleId: `${eventData.title} - ${eventData.time} - ${eventData.room}`,
+      text: eventData.note,
+    });
+    await getScheduleNotes();
+    setOpenModal(false);
+    setContext({ ...context, isLoading: false });
+  };
+
+  React.useEffect(() => {
+    Object.entries(schedule).forEach(([key, value]) => {
+      value.forEach((subject, index) => {
+        const note = scheduleNotes.find(
+          (note) => note.scheduleId === `${subject.title} - ${subject.time} - ${subject.room}`,
+        );
+        if (note) {
+          schedule[key][index] = {
+            ...subject,
+            note: note.text,
+            summary: `${context.role === USER_ROLE.student ? `${subject.lecturer}\n` : ''}${subject.room}\nGhi chú: ${
+              note.text
+            }`,
+          };
+        } else {
+          schedule[key][index] = {
+            ...subject,
+            note: '',
+            summary: `${context.role === USER_ROLE.student ? `${subject.lecturer}\n` : ''}${subject.room}`,
+          };
+        }
+      });
+    });
+  }, [scheduleNotes, schedule]);
 
   return (
     <>
@@ -301,11 +357,16 @@ const CalendarScreen = () => {
         />
       </CalendarProvider>
       <ReactNativeModal
+        statusBarTranslucent={false}
         isVisible={openModal}
         onBackdropPress={() => setOpenModal(false)}
         style={{ margin: 0, justifyContent: 'flex-end' }}
         children={
-          <View style={{ height: '50%', backgroundColor: '#fff' }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            enabled={false}
+            style={{ height: '50%', backgroundColor: '#fff' }}
+          >
             <MenuProvider skipInstanceCheck>
               <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
                 <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => setOpenModal(false)}>
@@ -385,7 +446,7 @@ const CalendarScreen = () => {
                     placeholder="Bắt đầu"
                     editable={false}
                     onPressIn={() => setDateTimePicker('start')}
-                    value={eventData.isFixed ? eventData.group : new Date(eventData.start)?.toLocaleString()}
+                    value={eventData.isFixed ? eventData.numberOfLessons : new Date(eventData.start)?.toLocaleString()}
                   />
                 </Pressable>
                 <Pressable disabled={eventData.isFixed} onPress={() => setDateTimePicker('end')}>
@@ -421,8 +482,10 @@ const CalendarScreen = () => {
                       padding: 10,
                       color: '#000',
                     }}
-                    editable={false}
-                    value={eventData.numberOfLessons}
+                    placeholder="Ghi chú"
+                    editable={true}
+                    value={eventData.note}
+                    onChangeText={(text) => setEventData({ ...eventData, note: text })}
                   />
                 ) : (
                   <Dropdown
@@ -461,23 +524,26 @@ const CalendarScreen = () => {
                   <Button
                     title="Lưu"
                     color="#30cc00"
-                    disabled={eventData.isFixed}
                     onPress={() => {
-                      if (new Date(eventData.start).getTime() >= new Date(eventData.end).getTime()) {
-                        return Alert.alert('Sorry', 'Hãy chọn 1 khoảng thời gian phù hợp');
-                      }
-
-                      if (eventData.id) {
-                        updateEvent();
+                      if (eventData.isFixed) {
+                        updateScheduleNote();
                       } else {
-                        createNewEvent();
+                        if (new Date(eventData.start).getTime() >= new Date(eventData.end).getTime()) {
+                          return Alert.alert('Sorry', 'Hãy chọn 1 khoảng thời gian phù hợp');
+                        }
+
+                        if (eventData.id) {
+                          updateEvent();
+                        } else {
+                          createNewEvent();
+                        }
                       }
                     }}
                   />
                 </View>
               </View>
             </MenuProvider>
-          </View>
+          </KeyboardAvoidingView>
         }
       />
       {dateTimePicker.length > 0 && (

@@ -1,6 +1,6 @@
 import { SERVER_API_URL } from '../common/constant';
 
-const server_api_url = `${SERVER_API_URL}/schedule-notes`;
+const server_api_url = `${SERVER_API_URL}/events`;
 
 class ScheduleNoteApis {
   constructor() {}

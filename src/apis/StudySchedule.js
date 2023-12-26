@@ -2,7 +2,7 @@ import { DKMH_API_URL, SERVER_API_URL } from '../common/constant';
 import { TEST_SCHEDULE, TEST_USER_ID } from '../utils/mock';
 
 const dkmh_api_url = `${DKMH_API_URL}/sch`;
-const server_api_url = `${SERVER_API_URL}/`;
+const server_api_url = `${SERVER_API_URL}/schedule-notes`;
 
 class StudyScheduleAPIs {
   constructor() {}
@@ -97,6 +97,28 @@ class StudyScheduleAPIs {
       }),
     })
       .then((response) => response.json())
+      .catch((err) => console.log(err));
+  };
+
+  getScheduleNotes = (query) => {
+    return fetch(`${server_api_url}?` + new URLSearchParams(query), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  };
+
+  updateScheduleNote = async (data) => {
+    return fetch(`${server_api_url}/`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
       .catch((err) => console.log(err));
   };
 }
