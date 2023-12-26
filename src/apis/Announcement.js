@@ -25,13 +25,25 @@ class AnnouncementApis {
       .catch((err) => console.log(err));
   };
 
-  reply = async (id, data) => {
+  seen = async (id, data) => {
     return fetch(`${url}/${id}/replies`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  };
+
+  reply = async (id, studentId, role, text) => {
+    return fetch(`${url}/${id}/replies/${studentId}`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: role, text, at: new Date().getTime() }),
     })
       .then((res) => res.json())
       .catch((err) => console.log(err));

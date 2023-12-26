@@ -9,6 +9,8 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  TextInput,
+  Button,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
@@ -19,6 +21,8 @@ import announcementApis from '../apis/Announcement';
 import { useIsFocused } from '@react-navigation/native';
 import { Context } from '../utils/context';
 import RNFetchBlob from 'rn-fetch-blob';
+import { USER_ROLE } from '../common/constant';
+import { Avatar } from 'react-native-paper';
 
 const AnnouncementScreen = () => {
   const isFocus = useIsFocused();
@@ -31,6 +35,7 @@ const AnnouncementScreen = () => {
 
   const [modalVisible, setModalVisible] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [text, setText] = React.useState('');
 
   const getData = async () => {
     const data = await announcementApis.search({ showing: true, userId: context.userId });
@@ -43,6 +48,7 @@ const AnnouncementScreen = () => {
           ngay_hieu_chinh: announcement.at,
           noi_dung: announcement.body,
           files: announcement.files,
+          replies: announcement.replies?.find((reply) => reply.studentId === context.userId)?.data || [],
         })),
       );
     }
@@ -89,7 +95,7 @@ const AnnouncementScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         onModalHide={() => setSelected(null)}
-        onModalShow={() => announcementApis.reply(announcements[selected].id, { studentId: context.userId })}
+        onModalShow={() => announcementApis.seen(announcements[selected].id, { studentId: context.userId })}
         children={
           selected !== null ? (
             <Animatable.View style={styles.modalContainer} animation="slideInUp">
@@ -103,10 +109,13 @@ const AnnouncementScreen = () => {
               <ScrollView>
                 <RenderHtml contentWidth={width} source={{ html: announcements[selected].noi_dung }} />
                 {announcements[selected].files?.length ? (
-                  <View style={{ borderTopWidth: 0.5, marginVertical: 20 }}>
+                  <View style={{ borderTopWidth: 0.5, marginVertical: 20, paddingVertical: 10 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tệp đính kèm</Text>
                     {announcements[selected].files.map((file, index) => (
-                      <View key={index} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                      <View
+                        key={index}
+                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}
+                      >
                         <AntDesign name="link" />
                         <Text
                           key={index}
@@ -123,6 +132,79 @@ const AnnouncementScreen = () => {
                 ) : (
                   <></>
                 )}
+                <View style={{ borderTopWidth: 0.5, marginTop: 20, paddingVertical: 20, flex: 1 }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Phản hồi</Text>
+                  <View style={{ flex: 1, marginBottom: 10 }}>
+                    <TextInput
+                      textAlign="left"
+                      textAlignVertical="top"
+                      style={{
+                        marginVertical: 10,
+                        height: 100,
+                        borderRadius: 8,
+                        borderColor: 'gray',
+                        borderWidth: 1,
+                        padding: 10,
+                        color: '#000',
+                      }}
+                      value={text}
+                      onChangeText={(text) => setText(text)}
+                    />
+                    <Button
+                      title="Gửi"
+                      color="#30cc00"
+                      onPress={() => {
+                        announcementApis.reply(announcements[selected].id, context.userId, context.role, text);
+                        const prevState = announcements;
+                        prevState[selected].replies.push({ from: context.role, text, at: new Date().getTime() });
+                        setAnnouncements(prevState);
+                        setText('');
+                      }}
+                    />
+                  </View>
+                  {announcements[selected].replies.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        marginVertical: 10,
+                        marginHorizontal: 5,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        flex: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Avatar.Image
+                        source={
+                          item.from === context.role
+                            ? require('../assets/male_boy_person_people_avatar_icon_159358.png')
+                            : require('../assets/9703596.png')
+                        }
+                        size={32}
+                        style={{ backgroundColor: '#64b5f6' }}
+                      />
+                      <View style={{ marginLeft: 10, flex: 1 }}>
+                        <View
+                          style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                            {item.from === context.role ? 'Bạn' : 'Admin'}
+                          </Text>
+                          <Text style={{ fontStyle: 'italic', fontSize: 12 }}>
+                            {new Date(item.at).toLocaleString()}
+                          </Text>
+                        </View>
+                        <Text>{item.text}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
               </ScrollView>
             </Animatable.View>
           ) : (
