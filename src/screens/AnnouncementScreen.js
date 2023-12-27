@@ -106,7 +106,7 @@ const AnnouncementScreen = () => {
               <Text style={styles.modalSubtitle}>
                 {new Date(announcements[selected]?.ngay_hieu_chinh).toLocaleString('en-GB')}
               </Text>
-              <ScrollView>
+              <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <RenderHtml contentWidth={width} source={{ html: announcements[selected].noi_dung }} />
                 {announcements[selected].files?.length ? (
                   <View style={{ borderTopWidth: 0.5, marginVertical: 20, paddingVertical: 10 }}>
