@@ -48,7 +48,7 @@ const AnnouncementScreen = () => {
           ngay_hieu_chinh: announcement.at,
           noi_dung: announcement.body,
           files: announcement.files,
-          replies: announcement.replies?.find((reply) => reply.studentId === context.userId)?.data || [],
+          replies: announcement.replies?.find((reply) => reply.userId === context.userId)?.data || [],
         })),
       );
     }
@@ -95,7 +95,7 @@ const AnnouncementScreen = () => {
         style={{ margin: 0 }}
         isVisible={modalVisible}
         onModalHide={() => setSelected(null)}
-        onModalShow={() => announcementApis.seen(announcements[selected].id, { studentId: context.userId })}
+        onModalShow={() => announcementApis.seen(announcements[selected].id, { userId: context.userId })}
         children={
           selected !== null ? (
             <Animatable.View style={styles.modalContainer} animation="slideInUp">
@@ -154,11 +154,14 @@ const AnnouncementScreen = () => {
                       title="Gửi"
                       color="#30cc00"
                       onPress={() => {
-                        announcementApis.reply(announcements[selected].id, context.userId, context.role, text);
-                        const prevState = announcements;
-                        prevState[selected].replies.push({ from: context.role, text, at: new Date().getTime() });
-                        setAnnouncements(prevState);
-                        setText('');
+                        if (text) {
+                          announcementApis.reply(announcements[selected].id, context.userId, context.role, text);
+                          const prevState = announcements;
+                          prevState[selected].replies = prevState[selected].replies || [];
+                          prevState[selected].replies.push({ from: context.role, text, at: new Date().getTime() });
+                          setAnnouncements(prevState);
+                          setText('');
+                        }
                       }}
                     />
                   </View>

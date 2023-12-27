@@ -171,7 +171,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         )}
         contentContainerStyle={{
-          margin: 8,
+          padding: 8,
           display: 'flex',
           justifyContent: 'center',
         }}

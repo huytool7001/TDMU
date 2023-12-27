@@ -16,6 +16,7 @@ LogBox.ignoreLogs([
   `ReactImageView: Image source "null" doesn't exist`,
   'Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.',
   `TypeError: Cannot read property 'ds_thoi_khoa_bieu' of undefined`,
+  `Error: Tried to use permissions API while not attached to an Activity`,
 ]);
 
 if (!global.btoa) {

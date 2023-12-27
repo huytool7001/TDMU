@@ -37,8 +37,8 @@ class AnnouncementApis {
       .catch((err) => console.log(err));
   };
 
-  reply = async (id, studentId, role, text) => {
-    return fetch(`${url}/${id}/replies/${studentId}`, {
+  reply = async (id, userId, role, text) => {
+    return fetch(`${url}/${id}/replies/${userId}`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',

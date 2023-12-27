@@ -105,9 +105,9 @@ const CalendarScreen = () => {
     }
 
     setContext({ ...context, isLoading: true });
-    const start = eventData.start;
+    const start = new Date(eventData.start);
     start.setHours(start.getHours() + 7);
-    const end = eventData.end;
+    const end = new Date(eventData.end);
     end.setHours(end.getHours() + 7);
     await scheduleNoteApis.create({
       ...eventData,
